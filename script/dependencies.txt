@@ -1,0 +1,14 @@
+numpy
+pyparsing
+python-dateutil
+requests
+matplotlib
+tensorflow
+pillow
+scipy
+scikit-learn
+tqdm
+prettytable
+graphviz
+opencv-python
+python3-picamera
