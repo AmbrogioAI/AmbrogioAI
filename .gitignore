@@ -4,9 +4,3 @@ ambrogio.png
 .DS_Store
 **/.ipynb_checkpoints/*
 .ipynb_checkpoints
-
-# ignore the DataSet folder and its content
-DataSet/**
-DataSet/
-DataSet
-**/DataSet/**

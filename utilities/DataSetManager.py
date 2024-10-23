@@ -3,17 +3,21 @@ import random
 import os
 import numpy as np
 import classes.FeatureExtractor as fe
+from torchvision import transforms
+# Crea i DataLoader per training e validazione
+from torch.utils.data import DataLoader
+from utilities.ImageTransformer import CustomImageDataset
 
 class DataSetManager:
     def __init__(self):
-        self.imagesPath = "imgs/"
-        self.jsonPath = "imgs\dataSet.json"
+        self.imagesPath = "DataSet/"
+        self.jsonPath = "DataSet\dataSet.json"
     
     def getAllImages(self):
         '''
         get the entire dataset in a form of a list of image paths in ORDER 
         '''
-        # get all the images from the imgs folder
+        # get all the images from the DataSet folder
         classes = getClasses.getClasses()
         images = []
         for c in classes:
@@ -44,7 +48,7 @@ class DataSetManager:
         '''
         get a random image path of the dataset
         '''
-        # go in the imgs folder and get a random image from a random class
+        # go in the DataSet folder and get a random image from a random class
         classes = getClasses.getClasses()
         randomClass = random.choice(classes)
         pathChosen = self.imagesPath + randomClass + "/"
@@ -142,3 +146,41 @@ class DataSetManager:
         # resolve the target to the class
         classes = getClasses.getClasses()
         return classes[target.index(1)]
+    
+    
+    def getSetForRes50(self):
+        # Ottieni i dataset
+        
+        trainingSet, validationSet, testSet = self.partitionDataSetEqualy()
+
+        # Funzione di trasformazione delle immagini
+
+        data_transforms = {
+            'train': transforms.Compose([
+                transforms.Resize(256),
+                transforms.RandomResizedCrop(224),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            ]),
+            'val': transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            ])
+        }
+
+        # Crea i dataset personalizzati per training e validazione
+        train_dataset = CustomImageDataset(trainingSet, transform=data_transforms['train'], target_func=self.getCorrentPredictionOfImage)
+        val_dataset = CustomImageDataset(validationSet, transform=data_transforms['val'], target_func=self.getCorrentPredictionOfImage)
+
+        
+
+        train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=4)
+        val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False, num_workers=4)
+
+        dataloaders = {'train': train_loader, 'val': val_loader}
+        dataset_sizes = {'train': len(train_dataset), 'val': len(val_dataset)}
+        return dataloaders, dataset_sizes
+
