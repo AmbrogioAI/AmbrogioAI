@@ -1,6 +1,10 @@
 import utilities.DataSetManager as dsm
 import classes.AmbrogioResNet50 as ar50
+from classes.AmbrogioResNet50 import Optimazer
+
 if __name__ == '__main__':
-    model = ar50.AmbrogioNet50()
+    model = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
     model.train_model(num_epochs=10)
     model.save_model()
+    
+    model.predict(dsm.DataSetManager().getRandomImage())

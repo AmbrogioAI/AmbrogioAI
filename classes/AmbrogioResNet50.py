@@ -31,7 +31,11 @@ class AmbrogioNet50:
         # imposta la loss function
         self.criterion = nn.CrossEntropyLoss()
         # imposta l'ottimizzatore
-        self.optimizer = self.optimizerResolver(optimizer)(self.model.parameters(), lr=lr, momentum=momentum)
+        if optimizer == Optimazer.Adam:
+            self.optimizer = self.optimizerResolver(optimizer)(self.model.parameters(), lr=lr)
+        else:
+            self.optimizer = self.optimizerResolver(optimizer)(self.model.parameters(), lr=lr, momentum=momentum)
+        
         # imposta il learning rate scheduler
         self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=7, gamma=0.1)
                 
@@ -105,3 +109,15 @@ class AmbrogioNet50:
     
     def save_model(self, path = "AmbrogioResNet50.pth"):
         torch.save(self.model.state_dict(), path)
+    
+    def predict(self,imgPath):
+        import PIL.Image as Image
+        
+        self.model.eval()
+        img = Image.open(imgPath)
+        img = self.data_transforms['val'](img)
+        img = img.unsqueeze(0)
+        img = img.to(self.device)
+        output = self.model(img)
+        _, preds = torch.max(output, 1)
+        return gc.resolveTarget(preds)

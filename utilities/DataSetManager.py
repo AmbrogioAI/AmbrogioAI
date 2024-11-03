@@ -152,6 +152,7 @@ class DataSetManager:
         # Ottieni i dataset
         
         trainingSet, validationSet, testSet = self.partitionDataSetEqualy()
+        validationSet = validationSet + testSet
 
         # Funzione di trasformazione delle immagini
 
