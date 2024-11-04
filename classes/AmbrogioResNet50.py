@@ -9,7 +9,12 @@ import os
 import utilities.getClasses as gc
 import utilities.DataSetManager as dsm
 from enum import Enum
-
+from classes.ModelInterface import Model
+from utilities.ShowPredictionTable import showPrediction
+import torch
+import torch.nn.functional as F
+from torchvision import transforms
+from PIL import Image
 
 class Optimazer(Enum):
     """ottimizzatori supportati dal modello"""
@@ -18,7 +23,7 @@ class Optimazer(Enum):
     StochasticGradientDescent = 2
     
 
-class AmbrogioNet50:
+class AmbrogioNet50(Model):
     def __init__(self,lr=0.001, momentum=0.9, optimizer=Optimazer.StochasticGradientDescent, step_size=7, gamma=0.1):
         
         self.model = models.resnet50(weights=ResNet50_Weights.DEFAULT)
@@ -42,7 +47,7 @@ class AmbrogioNet50:
     def setDevice(self):
         # Verifica se è disponibile la GPU e imposta il device di conseguenza
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        print(f"Device: {"cuda:0" if torch.cuda.is_available() else "cpu"}")
+        print(f"Device: {'cuda' if torch.cuda.is_available() else 'cpu'}")
         self.model = self.model.to(self.device)
         
     def optimizerResolver(self,mode:Optimazer) -> optim:
@@ -54,8 +59,6 @@ class AmbrogioNet50:
             return optim.SGD
         
         raise Exception("Optimizer not supported")
-    
-    import utilities.DataSetManager as dsm
 
     def train_model(self, num_epochs=25):
         dataManager = dsm.DataSetManager()
@@ -109,15 +112,30 @@ class AmbrogioNet50:
     
     def save_model(self, path = "AmbrogioResNet50.pth"):
         torch.save(self.model.state_dict(), path)
-    
-    def predict(self,imgPath):
-        import PIL.Image as Image
         
-        self.model.eval()
+    
+    
+
+    def predict(self, imgPath):
+        # Carica l'immagine e preparala per la predizione
         img = Image.open(imgPath)
-        img = self.data_transforms['val'](img)
-        img = img.unsqueeze(0)
+        img = img.resize((224, 224))
+        img = transforms.ToTensor()(img)
+        img = img.unsqueeze(0)  # Aggiunge una dimensione per il batch
         img = img.to(self.device)
-        output = self.model(img)
-        _, preds = torch.max(output, 1)
-        return gc.resolveTarget(preds)
+        
+        print(f'Predicting image {imgPath} ...')
+        
+        # Esegui la predizione
+        self.model.eval()
+        with torch.no_grad():
+            output = self.model(img)
+            
+            # Calcola le probabilità applicando softmax all'output
+            probabilities = F.softmax(output, dim=1).squeeze()  # Riduce la dimensione extra
+
+            probabilities = [prob.item() for prob in probabilities]
+            
+            showPrediction(probabilities)
+            
+        return probabilities  # Restituisce le probabilità di tutte le classi come array

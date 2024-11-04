@@ -6,7 +6,7 @@ from prettytable import PrettyTable
 
 input_size = 4096
 
-class AmbrogioSimple():
+class AmbrogioSimple(): 
     '''
     AmbrogioSimple è una rete neurale con un solo strato nascosto, 4096 neuroni di input e n neuroni nello strato nascosto (n=64 di default).
     '''
@@ -114,23 +114,6 @@ class AmbrogioSimple():
     def predict(self, X):
         predictions = self.forward(X)
         return predictions[0]
-    
-    def showPrediction(self,predictions):
-        table = PrettyTable()
-        table.title = "Probabilità di appartenenza alle classi"
-        table.align = "l"
-        table.border = True
-        table.header = True
-        
-        # Aggiungi le colonne
-        table.field_names = ["Etichetta", "Probabilità"]
-        for i in range(len(predictions)):
-            table.add_row([getClasses.getClasses()[i],predictions[i]])
-
-        # Stampa la tabella
-        print(table)
-        
-        print(f"La classe predetta è: {getClasses.getClasses()[np.argmax(predictions)]}")
     
     def saveState(self):
         np.savez('AmbrogioSimple', weights_input_hidden=self.weights_input_hidden, bias_hidden=self.bias_hidden,weights_hidden_output=self.weights_hidden_output, bias_output=self.bias_output)
