@@ -2,14 +2,14 @@
 setlocal enabledelayedexpansion
 
 :: Controlla se il file dependencies.txt esiste
-if not exist script/dependencies.txt (
+if not exist dependencies.txt (
     echo The dependencies.txt file doesn't exist.
     exit /b 1
 )
 
 :: Legge il file dependencies.txt riga per riga
 set "success=0"
-for /f "tokens=*" %%i in (script/dependencies.txt) do (
+for /f "tokens=*" %%i in (dependencies.txt) do (
     :: Controlla se il pacchetto è già installato
     set "package_installed=false"
     for /f "tokens=*" %%j in ('pip freeze') do (
