@@ -11,4 +11,4 @@ tqdm
 prettytable
 graphviz
 opencv-python
-python3-picamera
+torchvision

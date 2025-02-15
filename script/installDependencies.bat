@@ -1,44 +1,31 @@
 @echo off
-setlocal enabledelayedexpansion
+set VENV_DIR=venv
+set REQUIREMENTS_FILE=dependencies.txt
 
-:: Controlla se il file dependencies.txt esiste
-if not exist dependencies.txt (
-    echo The dependencies.txt file doesn't exist.
+:: Controlla se Python è installato
+where python >nul 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo Errore: Python3 non è installato.
     exit /b 1
 )
+cd ..
+:: Crea l'ambiente virtuale
+python -m venv %VENV_DIR%
+echo Ambiente virtuale creato in %VENV_DIR%
 
-:: Legge il file dependencies.txt riga per riga
-set "success=0"
-for /f "tokens=*" %%i in (dependencies.txt) do (
-    :: Controlla se il pacchetto è già installato
-    set "package_installed=false"
-    for /f "tokens=*" %%j in ('pip freeze') do (
-        :: split the line by == and get the first token
-        for /f "tokens=1 delims=^=" %%k in ("%%j") do (
-            set "package=%%k"
+:: Attiva l'ambiente virtuale
+call %VENV_DIR%\Scripts\activate
+python -m pip install --upgrade pip setuptools
 
-            if "%%i"=="!package!" (
-                set "package_installed=true"
-            )
-        )
-    )
-    
-    if "!package_installed!"=="false" (
-        echo Installing %%i
-        pip install %%i
-        if %errorlevel% neq 0 (
-            echo Failed to install %%i
-            set "success=1"
-        )
-    ) else (
-        echo %%i already installed.
-    )
+cd script
+:: Installa le dipendenze se il file requirements.txt esiste
+if exist %REQUIREMENTS_FILE% (
+    echo Installazione delle dipendenze da %REQUIREMENTS_FILE%...
+    pip install --upgrade pip
+    pip install -r %REQUIREMENTS_FILE%
+    echo Installazione completata.
+) else (
+    echo Attenzione: %REQUIREMENTS_FILE% non trovato. Nessuna dipendenza installata.
 )
 
-:: Se c'è stato un errore durante l'installazione, imposta l'errorlevel
-if %success% neq 0 (
-    exit /b 1
-)
-
-echo All dependencies are installed.
-exit /b 0
+echo Setup completato.

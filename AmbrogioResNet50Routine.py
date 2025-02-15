@@ -10,7 +10,7 @@ if __name__ == '__main__':
         freeze_support()
     
     model = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
-    model.train_model(num_epochs=10)
+    model.train_model(num_epochs=5)
     model.save_model()
         
     model.predict(dsm.DataSetManager().getRandomImage())
