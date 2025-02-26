@@ -3,35 +3,51 @@ import { Grid2 as Grid } from "@mui/material";
 import React from "react";
 import { chooseModel, PossibleModels } from "../routes/chooseModel";
 import { useDataContext } from "./Layout/DataProvider";
+import { t } from "../translations/t";
+import LoadingScreen from "./LoadingScreen";
 
 function ModelPicker() {
-  const {setModelName} = useDataContext();
+  const { setModelName, language } = useDataContext();
+  const [isLoading, setIsLoading] = React.useState(false);
 
+  const handleClick = (model: PossibleModels) => {
+    setIsLoading(true);
+    chooseModel(model)
+      .then((res) => {
+        setIsLoading(false);
+        setModelName(res);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
+      });
+  };
 
   return (
-    <Card sx={{ p: 3, width: "90%" }} elevation={5}>
-      <Stack spacing={2}>
-        <Typography variant="h4">
-          Seleziona un modello tra quelli disponibili:
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <SingleModelButton
-              model="AmbrogioNet50"
-              onClick={() => chooseModel(PossibleModels.resNet50).then((res) => setModelName(res))}
-              description="Maggiordomo molto intelligente, fa errori raramente,e se li commette impara da essi personalizzandosi in base all'utilizzatore."
-            />
+    <>
+      <Card sx={{ p: 3, width: "90%" }} elevation={5}>
+        <Stack spacing={2}>
+          <Typography variant="h4">{t("ChooseModel", language)}</Typography>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <SingleModelButton
+                model="AmbrogioNet50"
+                onClick={() => handleClick(PossibleModels.resNet50)}
+                description={t("ResNet50Description", language)}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <SingleModelButton
+                model="AmbrogioSimple"
+                onClick={() => handleClick(PossibleModels.simple)}
+                description={t("SimpleDescription", language)}
+              />
+            </Grid>
           </Grid>
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <SingleModelButton
-              model="AmbrogioSimple"
-              onClick={() => chooseModel(PossibleModels.simple)}
-              description="Maggiordomo molto semplice, ogni tanto potrebbe fare qualche errore, gli manca un po' di esperienza."
-            />
-          </Grid>
-        </Grid>
-      </Stack>
-    </Card>
+        </Stack>
+      </Card>
+      <LoadingScreen isLoading={isLoading} loadingText={t("loadingModel",language)} />
+    </>
   );
 }
 

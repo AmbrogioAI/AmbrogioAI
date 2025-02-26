@@ -6,15 +6,11 @@ export enum Language {
     IT = "it"
 }
 
-export function t(key: string,lang:Language): string {
-    let translation = "";
-    switch(lang){
-        case Language.EN:
-            translation = en[key];
-            break;
-        case Language.IT:
-            translation = it[key];
-            break;
-    }
-    return translation;
+const translations: Record<Language, Record<string, string>> = {
+    [Language.EN]: en,
+    [Language.IT]: it
+};
+
+export function t(key: string, lang: Language): string {
+    return translations[lang]?.[key] ?? translations[Language.EN]?.[key] ?? key;
 }

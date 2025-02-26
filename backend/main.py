@@ -47,7 +47,6 @@ def choseAi():
         ss.ServerState().set_model(modelChosen)
         return jsonify({"modelChosen": "AmbrogioNet50"})
     else:
-        # THIS CURRENTLY DOESN'T WORK => add the absoulute path to the loadState method
         modelChosen = simple.AmbrogioSimple()
         modelChosen.loadState()
         ss.ServerState().set_model(modelChosen)

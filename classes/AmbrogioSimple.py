@@ -119,7 +119,12 @@ class AmbrogioSimple():
         np.savez('AmbrogioSimple', weights_input_hidden=self.weights_input_hidden, bias_hidden=self.bias_hidden,weights_hidden_output=self.weights_hidden_output, bias_output=self.bias_output)
     
     def loadState(self):
-        data = np.load('AmbrogioSimple.npz')
+        import os
+        root = os.path.dirname(os.path.abspath(__file__))
+        # get the absolute path of the "utilities" folder
+        root = os.path.dirname(root)
+        
+        data = np.load(root+"/AmbrogioSimple.npz")
         self.weights_input_hidden = data['weights_input_hidden']
         self.bias_hidden = data['bias_hidden']
         self.weights_hidden_output = data['weights_hidden_output']
