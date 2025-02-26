@@ -1,7 +1,7 @@
 def takePhoto():
     '''
     Takes a photo using the Raspberry Pi camera module if available, or a USB camera (OpenCV) otherwise.
-    The photo is saved in a folder named "photo" on the Desktop.
+    The photo is saved in a folder named "photo" in the utilities/photo folder.
     
     :return: The path of the saved photo.
     '''
@@ -53,38 +53,18 @@ def takePhoto():
         # Accedi alla telecamera (di solito l'indice 0 è la telecamera principale)
         cap = cv2.VideoCapture(0)
 
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-
-
         if not cap.isOpened():
             print("Errore: impossibile accedere alla telecamera.")
+            return False
+
+        # Scatta la foto
+        ret, frame = cap.read()
+
+        if ret:
+            cv2.imwrite(file_path, frame) 
+            print(f"Foto salvata in {file_path}")
         else:
-            # Scatta la foto
-            ret, frame = cap.read()
-
-            if ret:
-
-                # ***Mantieni l'immagine a colori***
-        
-                # Converti dallo spazio colore BGR (usato da OpenCV) a YCrCb
-                ycrcb = cv2.cvtColor(frame, cv2.COLOR_BGR2YCrCb)
-
-                # Equalizza solo il canale della luminosità (Y)
-                ycrcb[:, :, 0] = cv2.equalizeHist(ycrcb[:, :, 0])
-
-                # Converti di nuovo a BGR
-                enhanced_image = cv2.cvtColor(ycrcb, cv2.COLOR_YCrCb2BGR)
-
-                # Salva l'immagine migliorata
-                file_path = "foto_enhanced.jpg"
-                cv2.imwrite(file_path, enhanced_image)
-                print(f"Foto salvata in {file_path}")
-            else:
-                print("Errore: impossibile catturare l'immagine.")
-
-            # Rilascia la telecamera
-            cap.release()
+            print("Errore: impossibile catturare l'immagine.")
     
     return file_path
 

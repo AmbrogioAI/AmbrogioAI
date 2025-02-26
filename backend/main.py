@@ -1,7 +1,6 @@
 import sys
 import os
-import io
-from PIL import Image
+
 
 # Ottieni il percorso assoluto della cartella principale (AmbrogioAI)
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -18,6 +17,10 @@ from classes.AmbrogioResNet50 import Optimazer
 from classes import AmbrogioResNet50 as ar50
 from classes import AmbrogioSimple as simple
 import serverState as ss
+from utilities.PhotoTaker import takePhoto
+from PIL import Image
+import base64
+
 
 app = Flask(__name__)
 CORS(app)
@@ -60,32 +63,45 @@ def predict():
     if ss.ServerState().get_model() is None:
         return jsonify({"error": "Nessun modello selezionato"}), 400
 
-    image_file = request.files['image']
-    if image_file.filename == '':
-        return jsonify({"error": "File non valido"}), 400
+    path = takePhoto()
 
-    file_path = os.path.join(UPLOAD_FOLDER, image_file.filename)
-    image_file.save(file_path)  # Salva il file
+    prediction = ss.ServerState().get_model().predict(path)
+    
+    return jsonify({
+        "prediction": prediction,
+        "image": getImageFormatToReturn(path)  
+    }), 200
 
-    # Verifica che il file esista
-    if not os.path.exists(file_path):
-        return jsonify({"error": "Errore nel salvataggio dell'immagine"}), 500
-
-    try:
-        image = Image.open(file_path)
-        image.verify()  # Controlla se è corrotto
-        image = Image.open(file_path).convert('RGB')  # Riapri e converti in RGB
-    except Exception as e:
-        return jsonify({"error": f"Errore nell'apertura dell'immagine: {str(e)}"}), 400
-
-    prediction = ss.ServerState().get_model().predict(file_path)
-    return jsonify({"prediction": prediction})
+@app.route('/takePhoto', methods=['POST'])
+def takePhotoRoute():
+    path = takePhoto()
+    return jsonify({
+        "image": getImageFormatToReturn(path)  
+    }), 200
 
 @app.route('/currentModel', methods=['GET'])
 def currentModel():
     if ss.ServerState().get_model() is None:
         return jsonify({}), 200
     return jsonify({"model": ss.ServerState().get_model().name}), 200
+
+
+
+def getImageFormatToReturn(path):
+    if not os.path.exists(path):
+        return jsonify({"error": "Errore nel salvataggio dell'immagine"}), 500
+
+    try:
+        image = Image.open(path)
+        image.verify()  # Controlla se è corrotto
+        image = Image.open(path).convert('RGB')  # Riapri e converti in RGB
+    except Exception as e:
+        return jsonify({"error": f"Errore nell'apertura dell'immagine: {str(e)}"}), 400
+
+    # Converte l'immagine in Base64
+    with open(path, "rb") as img_file:
+        img_base64 = base64.b64encode(img_file.read()).decode('utf-8')
+    return img_base64
 
 if __name__ == "__main__":
     app.run()

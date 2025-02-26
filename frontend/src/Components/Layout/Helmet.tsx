@@ -13,7 +13,7 @@ function Helmet({
       <Stack
       spacing={5}
       direction="column"
-      justifyContent={"flex-start"}
+      justifyContent={"center"}
       alignItems="center"
       sx={{ width: "100%" }}
     >

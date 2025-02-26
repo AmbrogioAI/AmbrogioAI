@@ -5,6 +5,7 @@ import { chooseModel, PossibleModels } from "../routes/chooseModel";
 import { useDataContext } from "./Layout/DataProvider";
 import { t } from "../translations/t";
 import LoadingScreen from "./LoadingScreen";
+import ModelImage from "./ModelImage";
 
 function ModelPicker() {
   const { setModelName, language } = useDataContext();
@@ -25,7 +26,7 @@ function ModelPicker() {
 
   return (
     <>
-      <Card sx={{ p: 3, width: "90%" }} elevation={5}>
+      <Card sx={{ p: 3, width: "90%", mt:"150px !important" }} elevation={5}>
         <Stack spacing={2}>
           <Typography variant="h4">{t("ChooseModel", language)}</Typography>
           <Grid container spacing={2}>
@@ -65,6 +66,7 @@ const SingleModelButton: React.FC<SingleModelButtonProps> = ({
   return (
     <Card onClick={onClick} sx={{ p: 2, cursor: "pointer" }} elevation={3}>
       <Typography variant="h5">{model}</Typography>
+      <ModelImage model={model=="AmbrogioNet50"?PossibleModels.resNet50:PossibleModels.simple} size={200} />
       <Typography>{description}</Typography>
     </Card>
   );

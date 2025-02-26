@@ -7,6 +7,12 @@
     "SimpleDescription":"Very simple butler, sometimes he might make some mistakes, he lacks a bit of experience.",
     "ChooseModel":"Choose a model among the available ones:",
     "noModel":"No model",
-    "loadingServer":"Loading server data...",
-    "loadingModel":"Loading model..."
+    "loadingServer":"Loading server data",
+    "loadingModel":"Loading model",
+    "AmbrogioSimple.HelloDay": "Good morning, how can I help you today?",
+    "AmbrogioSimple.HelloNight": "Good evening, how can I help you tonight?",
+    "AmbrogioNet50.HelloDay": "Good morning sir, how can I help you today?",
+    "AmbrogioNet50.HelloNight": "Good evening sir, how can I help you tonight?",
+    "takePhotoAndShow": "Take a photo and show me what you see",
+    "takePhoto": "Take a photo and tell me how I'm dressed"
 }

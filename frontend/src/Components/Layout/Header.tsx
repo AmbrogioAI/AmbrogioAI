@@ -10,8 +10,8 @@ import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import deleteChosenModel from "../../routes/removeChosenModel";
 import { Language, t } from "../../translations/t";
-import UnitedKingdomFlag from "../../icons/unitedKingdomFlag";
-import ItalianFlag from "../../icons/italianFlag";
+import UnitedKingdomFlag from "../../icons/UnitedKingdomFlag";
+import ItalianFlag from "../../icons/ItalianFlag";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 
 function Header() {
@@ -42,14 +42,14 @@ function Header() {
 
   const actions = [
     {
-      icon: language == Language.EN ? <UnitedKingdomFlag width={30} height={30} /> : <ItalianFlag width={30} height={30} />,
-      name: t("Language", language),
-      method:()=> setLanguage(language == Language.EN ? Language.IT : Language.EN),
-    },
-    {
       icon: getLatencyIcon(),
       name: t("latency",language) + (latency != null ? latency : 0) + "ms",
       method: () => {},
+    },
+    {
+      icon: language == Language.EN ? <UnitedKingdomFlag width={30} height={30} /> : <ItalianFlag width={30} height={30} />,
+      name: t("Language", language),
+      method:()=> setLanguage(language == Language.EN ? Language.IT : Language.EN),
     },
     {
       icon: isDarkMode ? <NightsStayIcon /> : <WbSunnyIcon />,

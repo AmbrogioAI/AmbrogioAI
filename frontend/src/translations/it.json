@@ -1,12 +1,17 @@
 {
-    "ModelDisplayer":"Modello",
-    "latency":"Latenza:  ",
-    "Theme":"Tema",
+    "latency": "Latenza:  ",
+    "Theme": "Tema",
     "Language": "Lingua",
-    "ResNet50Description":"Maggiordomo molto intelligente, fa errori raramente,e se li commette impara da essi personalizzandosi in base all'utilizzatore.",
-    "SimpleDescription":"Maggiordomo molto semplice, ogni tanto potrebbe fare qualche errore, gli manca un po' di esperienza.",
-    "ChooseModel":"Seleziona un modello tra quelli disponibili:",
-    "noModel":"Nessun modello",
-    "loadingServer":"Caricamento dati dal server...",
-    "loadingModel":"Caricamento del modello..."
+    "ResNet50Description": "Maggiordomo molto intelligente, fa errori raramente,e se li commette impara da essi personalizzandosi in base all'utilizzatore.",
+    "SimpleDescription": "Maggiordomo molto semplice, ogni tanto potrebbe fare qualche errore, gli manca un po' di esperienza.",
+    "ChooseModel": "Seleziona un modello tra quelli disponibili:",
+    "noModel": "Nessun modello",
+    "loadingServer": "Caricamento dati dal server",
+    "loadingModel": "Caricamento del modello",
+    "AmbrogioSimple.HelloDay": "Buongiorno, come posso aiutarti oggi?",
+    "AmbrogioSimple.HelloNight": "Buonasera, come posso aiutarti questa sera?",
+    "AmbrogioNet50.HelloDay": "Buongiorno signore, come posso aiutarla oggi?",
+    "AmbrogioNet50.HelloNight": "Buonasera signore, come posso aiutarla questa sera?",
+    "takePhotoAndShow": "Scatta una foto e mostrami cosa vedi",
+    "takePhoto": "Scatta una foto e dimmi come sono vestito"
 }
