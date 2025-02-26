@@ -3,7 +3,6 @@ pyparsing
 python-dateutil
 requests
 matplotlib
-tensorflow
 pillow
 scipy
 scikit-learn
@@ -11,4 +10,5 @@ tqdm
 prettytable
 graphviz
 opencv-python
-torchvision
+flask
+flask-cors

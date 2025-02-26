@@ -19,9 +19,10 @@ def takePhoto():
     except ImportError:
         is_raspberry = False
 
-    # Crea la cartella "photo" sul Desktop
-    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-    photo_folder = os.path.join(desktop_path, "photo")
+    # Ottieni la directory root del progetto (cartella in cui si trova lo script)
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    photo_folder = os.path.join(ROOT_DIR, "photo")
+    
 
     if not os.path.exists(photo_folder):
         os.makedirs(photo_folder)
@@ -64,13 +65,19 @@ def takePhoto():
 
             if ret:
 
-                # Converti in scala di grigi
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                
-                # Equalizzazione dell'istogramma per migliorare il contrasto
-                enhanced_image = cv2.equalizeHist(gray)
-                
+                # ***Mantieni l'immagine a colori***
+        
+                # Converti dallo spazio colore BGR (usato da OpenCV) a YCrCb
+                ycrcb = cv2.cvtColor(frame, cv2.COLOR_BGR2YCrCb)
+
+                # Equalizza solo il canale della luminosità (Y)
+                ycrcb[:, :, 0] = cv2.equalizeHist(ycrcb[:, :, 0])
+
+                # Converti di nuovo a BGR
+                enhanced_image = cv2.cvtColor(ycrcb, cv2.COLOR_YCrCb2BGR)
+
                 # Salva l'immagine migliorata
+                file_path = "foto_enhanced.jpg"
                 cv2.imwrite(file_path, enhanced_image)
                 print(f"Foto salvata in {file_path}")
             else:

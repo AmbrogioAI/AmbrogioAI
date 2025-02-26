@@ -2,7 +2,6 @@ import utilities.DataSetManager as dsm
 import classes.FeatureExtractor as fe
 import numpy as np
 import utilities.getClasses as getClasses
-from prettytable import PrettyTable
 
 input_size = 4096
 
@@ -11,6 +10,7 @@ class AmbrogioSimple():
     AmbrogioSimple è una rete neurale con un solo strato nascosto, 4096 neuroni di input e n neuroni nello strato nascosto (n=64 di default).
     '''
     def __init__(self, hidden_size=64, learning_rate=0.01):
+        self.name = 'AmbrogioSimple'
         # Inizializzazione dei pesi
         self.learning_rate = learning_rate
         

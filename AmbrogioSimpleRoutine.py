@@ -5,6 +5,7 @@ import utilities.DataSetManager as dsm
 from tqdm import tqdm
 from utilities.PhotoTaker import takePhoto
 import time
+import utilities.ShowPredictionTable as showPrediction
 
 dataSet = dsm.DataSetManager()
 featureExtractor = fe.FeatureExtractor()
@@ -22,8 +23,8 @@ while continueGuessing:
     path = takePhoto()
     input = featureExtractor.extract_features(path)
     out = ambrogio.predict(input)
-    ambrogio.showPrediction(out)
-    time.sleep(10)
+    showPrediction.showPrediction(out)
+    time.sleep(5)
 
 
 print("si vuole salvare lo stato della rete neurale? [y/n]")

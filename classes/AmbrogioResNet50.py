@@ -4,8 +4,6 @@ import torch.optim as optim
 from torchvision import datasets, models, transforms
 from torchvision.models import ResNet50_Weights
 from torch.utils.data import DataLoader
-import matplotlib.pyplot as plt
-import os
 import utilities.getClasses as gc
 import utilities.DataSetManager as dsm
 from enum import Enum
@@ -25,7 +23,7 @@ class Optimazer(Enum):
 
 class AmbrogioNet50(Model):
     def __init__(self,lr=0.001, momentum=0.9, optimizer=Optimazer.StochasticGradientDescent, step_size=7, gamma=0.1):
-        
+        self.name = 'AmbrogioNet50'
         self.model = models.resnet50(weights=ResNet50_Weights.DEFAULT)
         
         # Sostituire l'ultimo fully connected layer (fc)
@@ -113,12 +111,17 @@ class AmbrogioNet50(Model):
     def save_model(self, path = "AmbrogioResNet50.pth"):
         torch.save(self.model.state_dict(), path)
         
-    
+    def load_model(self, path = "AmbrogioResNet50.pth"):
+        import os    
+        root = os.path.dirname(os.path.abspath(__file__))
+        # get the absolute path of the "utilities" folder
+        root = os.path.dirname(root)
+        self.model.load_state_dict(torch.load(root+"/"+path))
     
 
     def predict(self, imgPath):
         # Carica l'immagine e preparala per la predizione
-        img = Image.open(imgPath)
+        img = Image.open(imgPath).convert('RGB')
         img = img.resize((224, 224))
         img = transforms.ToTensor()(img)
         img = img.unsqueeze(0)  # Aggiunge una dimensione per il batch

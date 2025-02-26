@@ -19,7 +19,8 @@ inputs = dataSet.randomShuffleDataSet()
 targets = [dataSet.getCorrentPredictionOfImage(image) for image in inputs]
 inputs = [featureExtractor.extract_features(path) for path in inputs]
 
-ambrogio.train(inputs,targets)
+print("inizio ad allenare la rete neurale")
+ambrogio.train(inputs,targets,2000)
 
 print("si vuole salvare lo stato della rete neurale? [y/n]")
 try:

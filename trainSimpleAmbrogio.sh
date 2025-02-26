@@ -1,2 +1,0 @@
-clear 
-python trainNN.py
