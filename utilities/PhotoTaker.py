@@ -52,6 +52,9 @@ def takePhoto():
 
         # Accedi alla telecamera (di solito l'indice 0 è la telecamera principale)
         cap = cv2.VideoCapture(0)
+        
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
         if not cap.isOpened():
             print("Errore: impossibile accedere alla telecamera.")

@@ -75,9 +75,7 @@ def predict():
 @app.route('/takePhoto', methods=['POST'])
 def takePhotoRoute():
     path = takePhoto()
-    return jsonify({
-        "image": getImageFormatToReturn(path)  
-    }), 200
+    return  getImageFormatToReturn(path)
 
 @app.route('/currentModel', methods=['GET'])
 def currentModel():

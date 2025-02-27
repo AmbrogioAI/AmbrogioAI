@@ -73,11 +73,11 @@ function ModelDisplayer() {
           </Grid2>
         </Grid2>
       </Stack>
-      <LoadingPhotoScreen
-        startLoading={startLoading}
-        mode={selectedMode}
-        handleClose={() => setStartLoading(false)}
-      />
+      {
+        startLoading && (
+          <LoadingPhotoScreen mode={selectedMode} handleClose={() => setStartLoading(false)} />
+        )
+      }
     </>
   );
 }
