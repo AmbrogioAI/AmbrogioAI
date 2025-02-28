@@ -12,8 +12,5 @@ call installDependencies.bat
 cd ..
 
 
-echo Everything is ready to go!
-
-
 cd backend
 python main.py

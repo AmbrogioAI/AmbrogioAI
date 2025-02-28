@@ -2,8 +2,8 @@ import axios from "axios";
 import { routePrefix } from "../config/systemVariables";
 
 export interface PredictionResult {
-  prediction: string;
-  image: File;
+  prediction: number[];
+  image: string;
 }
 
 export function askToPredict(): Promise<PredictionResult> {

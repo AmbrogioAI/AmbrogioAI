@@ -1,9 +1,11 @@
 import { useState } from "react";
 import LoadingScreen from "./LoadingScreen";
-import { Backdrop, Button, Paper, Typography } from "@mui/material";
+import { Backdrop, Button, Paper, Stack, Typography } from "@mui/material";
 import React from "react";
 import takePhoto from "../routes/takePhoto";
 import { askToPredict } from "../routes/askToPredict";
+import { t } from "../translations/t";
+import { useDataContext } from "./Layout/DataProvider";
 
 enum Modes {
   singlePhoto = 0,
@@ -16,8 +18,11 @@ interface LoadingPhotoScreenProps {
 }
 
 function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
+  const { language } = useDataContext();
   const [isLoading, setIsLoading] = useState(false);
   const [close, setClose] = useState(false);
+  const [image, setImage] = useState("");
+  const [prediction, setPrediction] = useState([] as number[]);
 
   React.useEffect(() => {
     console.log("mode", mode);
@@ -26,7 +31,7 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
       case Modes.singlePhoto:
         takePhoto()
           .then((res) => {
-            console.log("Photo taken", res);
+            setImage(res);
             setIsLoading(false);
           })
           .catch((err) => {
@@ -37,7 +42,8 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
       case Modes.prediction:
         askToPredict()
           .then((res) => {
-            console.log("Prediction done", res);
+            setImage(res.image);
+            setPrediction(res.prediction);
             setIsLoading(false);
           })
           .catch((err) => {
@@ -53,21 +59,75 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
 
   return (
     <div style={{ marginTop: "0px !important" }}>
-      <LoadingScreen isLoading={isLoading} loadingText={"Loading Photo"} />
+      <LoadingScreen
+        isLoading={isLoading}
+        loadingText={t("LoadingPhoto", language)}
+      />
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
         open={!isLoading && !close}
       >
-        <Paper>
-          <Typography variant="h5">Loading Photo finished</Typography>
-          <Typography variant="h5">with mode = {mode}</Typography>
+        <Paper
+          style={{
+            width: "80%",
+            height: "80%",
+            padding: "20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+          elevation={3}
+        >
+          <Stack
+            spacing={2}
+            direction={"column"}
+            justifyContent={"flex-start"}
+            alignItems={"center"}
+            overflow={"auto"}
+            width={"100%"}
+          >
+            <Typography variant="h5">
+              {t("ThisIsWhatISee", language)}
+            </Typography>
+            <img
+              style={{ width: "90%", objectFit: "contain",borderRadius:"10px" }}
+              src={image}
+            />
+            {
+              prediction.length > 0 && (
+                <Stack
+                  spacing={2}
+                  direction={"column"}
+                  justifyContent={"flex-start"}
+                  alignItems={"center"}
+                  overflow={"auto"}
+                  width={"100%"}
+                >
+                  <Typography variant="h5">
+                    {t("Prediction", language)}
+                  </Typography>
+                  <Typography variant="h6">
+                    {prediction.map((item, index) => (
+                      <div key={index}>
+                        {t("Class"+index, language)}: {item}
+                      </div>
+                    ))}
+                  </Typography>
+                </Stack>
+              )
+            }
+          </Stack>
           <Button
+            variant="contained"
+            color="primary"
+            style={{ width: "80%", marginTop: "20px" }}
             onClick={() => {
               setClose(true);
               handleClose();
             }}
           >
-            Close
+            {t("Close", language)}
           </Button>
         </Paper>
       </Backdrop>

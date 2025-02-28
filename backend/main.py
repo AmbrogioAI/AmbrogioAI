@@ -57,8 +57,6 @@ def choseAi():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    if 'image' not in request.files:
-        return jsonify({"error": "Nessun file inviato"}), 400
     
     if ss.ServerState().get_model() is None:
         return jsonify({"error": "Nessun modello selezionato"}), 400
@@ -99,7 +97,8 @@ def getImageFormatToReturn(path):
     # Converte l'immagine in Base64
     with open(path, "rb") as img_file:
         img_base64 = base64.b64encode(img_file.read()).decode('utf-8')
-    return img_base64
+    return "data:image/jpeg;base64,"+img_base64
 
 if __name__ == "__main__":
-    app.run()
+    # start the server in debug
+    app.run(debug=True)

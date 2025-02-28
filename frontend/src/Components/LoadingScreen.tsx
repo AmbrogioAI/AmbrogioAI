@@ -26,7 +26,7 @@ function LoadingScreen({ loadingText,isLoading }: LoadingScreenProps) {
 
   return (
     <Backdrop
-      sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+      sx={(theme) => ({ marginTop: "0px !important",color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
       open={isLoading??true}
     >
       <Stack spacing={10} alignItems="center">

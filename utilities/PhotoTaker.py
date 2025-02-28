@@ -63,11 +63,17 @@ def takePhoto():
         # Scatta la foto
         ret, frame = cap.read()
 
-        if ret:
-            cv2.imwrite(file_path, frame) 
-            print(f"Foto salvata in {file_path}")
-        else:
-            print("Errore: impossibile catturare l'immagine.")
+        try:
+            if ret:
+                cv2.imwrite(file_path, frame) 
+                print(f"Foto salvata in {file_path}")
+            else:
+                print("Errore: impossibile catturare l'immagine.")
+            pass
+        except Exception as e:
+            print("Errore:", e)
+        finally:
+            cap.release()
     
     return file_path
 

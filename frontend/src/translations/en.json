@@ -14,5 +14,12 @@
     "AmbrogioNet50.HelloDay": "Good morning sir, how can I help you today?",
     "AmbrogioNet50.HelloNight": "Good evening sir, how can I help you tonight?",
     "takePhotoAndShow": "Take a photo and show me what you see",
-    "takePhoto": "Take a photo and tell me how I'm dressed"
+    "takePhoto": "Take a photo and tell me how I'm dressed",
+    "LoadingPhoto": "I'm taking the photo",
+    "ThisIsWhatISee": "This is what I see:",
+    "Close": "Close",
+    "Prediction": "Prediction:",
+    "Class0": "Elegant",
+    "Class1": "Sporty",
+    "Class2": "Casual"
 }
