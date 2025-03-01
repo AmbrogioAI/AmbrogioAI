@@ -11,7 +11,7 @@ def takePhoto():
 
     # Prova a importare picamera se è un Raspberry Pi
     try:
-        from picamera2 import PiCamera2
+        from picamera2 import Picamera2
         is_raspberry = True
     except ImportError:
         is_raspberry = False
