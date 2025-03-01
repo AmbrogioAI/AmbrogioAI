@@ -24,8 +24,12 @@ while IFS= read -r dependency; do
 done < dependencies.txt
 
 # Installa le dipendenze per la fotocamera Raspberry Pi
-sudo apt update
+sudo apt update && sudo apt upgrade -y 
+sudo apt install qt5-qmake qtbase5-dev
 sudo apt install -y libraspberrypi-dev libraspberrypi-bin
-pip install picamera
+pip install pyqt5
+pip install prctl
+sudo apt install -y libcap-dev libffi-dev libjpeg-dev 
+pip install picamera2
 
 echo "All dependencies are installed."

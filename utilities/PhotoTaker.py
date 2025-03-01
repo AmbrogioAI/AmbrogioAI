@@ -12,7 +12,7 @@ def takePhoto():
     # Prova a importare picamera se è un Raspberry Pi
     try:
         if 'raspberrypi' in platform.uname().node.lower():
-            from picamera import PiCamera
+            from picamera2 import PiCamera2
             is_raspberry = True
         else:
             is_raspberry = False
@@ -33,14 +33,16 @@ def takePhoto():
     print("modalità raspberry:", is_raspberry)
     if is_raspberry:
         # Utilizza la fotocamera del Raspberry Pi
-        camera = PiCamera()
+        camera = PiCamera2()
+
+        import time
 
         try:
-            camera.start_preview()
+            camera.start()
             # Attendi 2 secondi per permettere alla fotocamera di regolare l'illuminazione
-            camera.sleep(2)
+            time.sleep(2)
             # Scatta la foto
-            camera.capture(file_path)
+            camera.capture_file(file_path)
             print(f"Foto salvata in {file_path}")
         finally:
             camera.stop_preview()
