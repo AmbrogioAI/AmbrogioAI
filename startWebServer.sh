@@ -1,24 +1,52 @@
 #!/bin/bash
 
-# Cancella lo schermo (clear non funziona in tutti gli script, quindi lo rimuoviamo per sicurezza)
+# Cancella lo schermo
 clear
 
-# Naviga nella directory "script"
-cd script || { echo "Errore: impossibile accedere alla cartella script"; exit 1; }
-
-echo "Installing dependencies..."
-
-# Imposta i permessi di esecuzione per lo script di installazione
-chmod +x installDependecies.sh
-
-# Esegue lo script di installazione
-./installDependecies.sh
-
-# Torna alla directory principale
-cd ..
+# Controlla se Python 3.11 è installato
+if ! command -v python3.11 &>/dev/null; then
+    echo "Python 3.11 non trovato. Installazione in corso..."
+    
+    # Rimuove altre versioni di Python
+    sudo apt remove --purge -y python3 python3.*
+    sudo apt autoremove -y
+    sudo apt update
+    
+    # Installa Python 3.11
+    sudo apt install -y python3.11 python3.11-venv python3.11-dev
+    
+    # Verifica l'installazione
+    if ! command -v python3.11 &>/dev/null; then
+        echo "Errore: impossibile installare Python 3.11."
+        exit 1
+    fi
+else
+    echo "Python 3.11 è già installato."
+fi
 
 # Naviga nella cartella "backend"
 cd backend || { echo "Errore: impossibile accedere alla cartella backend"; exit 1; }
 
-# Avvia lo script Python con la versione specificata
-python3.11 main.py
+# Crea un ambiente virtuale (venv) se non esiste
+if [ ! -d "venv" ]; then
+    echo "Creazione dell'ambiente virtuale..."
+    python3.11 -m venv venv
+fi
+
+# Attiva l'ambiente virtuale
+source venv/bin/activate
+
+# Aggiorna pip e installa le dipendenze, se presenti
+echo "Installazione delle dipendenze del progetto..."
+pip install --upgrade pip
+cd ..
+cd script
+# Imposta i permessi di esecuzione per lo script di installazione e lo esegue
+chmod +x installDependecies.sh
+./installDependecies.sh
+
+cd ..
+cd backend
+# Avvia lo script Python con l'ambiente virtuale attivato
+echo "Avvio di main.py..."
+python main.py
