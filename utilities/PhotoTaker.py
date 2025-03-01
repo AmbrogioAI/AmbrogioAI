@@ -13,7 +13,8 @@ def takePhoto():
     try:
         from picamera2 import Picamera2
         is_raspberry = True
-    except ImportError:
+    except ImportError as e:
+        print(f"Errore nell'importazione di picamera2: {e}")
         is_raspberry = False
 
     # Ottieni la directory root del progetto (cartella in cui si trova lo script)

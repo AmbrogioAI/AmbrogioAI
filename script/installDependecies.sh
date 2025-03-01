@@ -27,7 +27,7 @@ done < dependencies.txt
 sudo apt update 
 sudo apt install -y libcap-dev libffi-dev libjpeg-dev python3-pyqt5 python3-prctl python3-libcamera python3-kms++ python3-dbus
 pip install --upgrade pip wheel setuptools
-pip install picamera2 numpy
+pip install picamera2
 
 
 echo "All dependencies are installed."
