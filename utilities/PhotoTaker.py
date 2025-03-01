@@ -11,11 +11,8 @@ def takePhoto():
 
     # Prova a importare picamera se è un Raspberry Pi
     try:
-        if 'raspberrypi' in platform.uname().node.lower():
-            from picamera2 import PiCamera2
-            is_raspberry = True
-        else:
-            is_raspberry = False
+        from picamera2 import PiCamera2
+        is_raspberry = True
     except ImportError:
         is_raspberry = False
 
@@ -33,20 +30,17 @@ def takePhoto():
     print("modalità raspberry:", is_raspberry)
     if is_raspberry:
         # Utilizza la fotocamera del Raspberry Pi
-        camera = PiCamera2()
+        picam2 = Picamera2()
+        picam2.start()
 
         import time
 
-        try:
-            camera.start()
-            # Attendi 2 secondi per permettere alla fotocamera di regolare l'illuminazione
-            time.sleep(2)
-            # Scatta la foto
-            camera.capture_file(file_path)
-            print(f"Foto salvata in {file_path}")
-        finally:
-            camera.stop_preview()
-            camera.close()
+        # Attendi 2 secondi per permettere alla fotocamera di regolare l'illuminazione
+        time.sleep(2)
+        # Scatta la foto
+        picam2.capture_file(file_path)
+        print(f"Foto salvata in {file_path}")
+        
 
     else:
         # Utilizza una telecamera USB (OpenCV)
