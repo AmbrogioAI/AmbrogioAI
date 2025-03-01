@@ -9,6 +9,9 @@ if [ ! -f dependencies.txt ]; then
     exit 1
 fi
 
+pip install tensorflow keras
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1
+
 # Legge il file dependencies.txt riga per riga
 while IFS= read -r dependency; do
     # Controlla se il pacchetto è già installato
