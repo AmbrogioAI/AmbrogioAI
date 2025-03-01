@@ -30,7 +30,7 @@ def takePhoto():
     # Genera il nome del file in base alla data e ora attuali
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     file_path = os.path.join(photo_folder, f"photo_{timestamp}.jpg")
-
+    print("modalità raspberry:", is_raspberry)
     if is_raspberry:
         # Utilizza la fotocamera del Raspberry Pi
         camera = PiCamera()
