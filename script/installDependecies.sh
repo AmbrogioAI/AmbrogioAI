@@ -23,6 +23,9 @@ while IFS= read -r dependency; do
     fi
 done < dependencies.txt
 
+# Installa le dipendenze per la fotocamera Raspberry Pi
+sudo apt update
+sudo apt install -y libraspberrypi-dev libraspberrypi-bin
 pip install picamera
 
 echo "All dependencies are installed."
