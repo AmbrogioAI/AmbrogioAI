@@ -116,7 +116,7 @@ class AmbrogioNet50(Model):
         root = os.path.dirname(os.path.abspath(__file__))
         # get the absolute path of the "utilities" folder
         root = os.path.dirname(root)
-        self.model.load_state_dict(torch.load(root+"/"+path))
+        self.model.load_state_dict(torch.load(root+"/"+path),map_location=self.device)
     
 
     def predict(self, imgPath):
