@@ -35,7 +35,7 @@ fi
 
 # Attiva l'ambiente virtuale
 source venv/bin/activate
-
+pip list
 # Aggiorna pip e installa le dipendenze, se presenti
 echo "Installazione delle dipendenze del progetto..."
 pip install --upgrade pip

@@ -23,15 +23,6 @@ while IFS= read -r dependency; do
     fi
 done < dependencies.txt
 
-# Legge il file dependencies.txt riga per riga
-while IFS= read -r dependency; do
-    # Controlla se il pacchetto è già installato
-    if ! pip show "$dependency" > /dev/null 2>&1; then
-        echo "Installing $dependency"
-        pip install "$dependency"
-    else
-        echo "$dependency already installed."
-    fi
-done < raspBerryDependencies.txt
+pip install picamera
 
 echo "All dependencies are installed."
