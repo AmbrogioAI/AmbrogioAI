@@ -1,5 +1,5 @@
 @echo off
-clear
+cls
 :: Navigate to the "script" directory
 cd script
 echo Installing dependencies...
@@ -11,6 +11,7 @@ call installDependencies.bat
 :: Go back to the main directory
 cd ..
 
+:: cloudflared tunnel -url http://127.0.0.1:5000
 
 cd backend
-python main.py
+start cmd /k python main.py && cloudflared tunnel -url http://127.0.0.1:5000

@@ -5,6 +5,7 @@ def takePhoto():
     
     :return: The path of the saved photo.
     '''
+    import cv2
     import os
     import platform
     from datetime import datetime
@@ -45,7 +46,6 @@ def takePhoto():
 
     else:
         # Utilizza una telecamera USB (OpenCV)
-        import cv2
 
         # Accedi alla telecamera (di solito l'indice 0 è la telecamera principale)
         cap = cv2.VideoCapture(0)

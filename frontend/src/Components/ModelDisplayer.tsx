@@ -57,14 +57,14 @@ function ModelDisplayer() {
           direction={"row"}
           justifyContent={"center"}
         >
-          <Grid2 size={{ xs: 12, sm: 6 }}>
+          <Grid2 size={{ sm: 12, md: 6 }}>
             <BtnAction
               text={t("takePhotoAndShow", language)}
               icon={<ImageSearchIcon style={{ fontSize: "50px" }} />}
               onClick={()=>handleShowPhoto()}
             />
           </Grid2>
-          <Grid2 size={{ xs: 12, sm: 6 }}>
+          <Grid2 size={{ sm: 12, md: 6 }}>
             <BtnAction
               text={t("takePhoto", language)}
               icon={<CameraIcon style={{ fontSize: "50px" }} />}

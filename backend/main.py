@@ -1,3 +1,4 @@
+from datetime import datetime
 import sys
 import os
 
@@ -12,7 +13,7 @@ sys.path.insert(0, BASE_DIR)
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import time
+from flask import make_response
 from classes.AmbrogioResNet50 import Optimazer
 from classes import AmbrogioResNet50 as ar50
 from classes import AmbrogioSimple as simple
@@ -23,7 +24,7 @@ import base64
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 # Endpoint per scattare una foto e fare una predizione
 @app.route('/test', methods=['GET'])
@@ -39,7 +40,7 @@ def deleteChosenModel():
 @app.route('/choseModel', methods=['POST'])
 def choseAi():
     data = request.get_json()
-        
+    modelName = ""
     if data['model'] == 0:
         # Windows Support 
         if os.name == 'nt':
@@ -48,56 +49,48 @@ def choseAi():
         modelChosen = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
         modelChosen.load_model()
         ss.ServerState().set_model(modelChosen)
-        return jsonify({"modelChosen": "AmbrogioNet50"})
+        modelName = "AmbrogioNet50"
     else:
         modelChosen = simple.AmbrogioSimple()
         modelChosen.loadState()
         ss.ServerState().set_model(modelChosen)
-        return jsonify({"modelChosen": "AmbrogioSimple"})
+        modelName = "AmbrogioNet50"
+
+    return jsonify({"modelChosen": modelName})
+    
+
+def saveImageToPath():
+    # Controlla se la cartella esiste, altrimenti creala
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
+    image = request.files['image']
+    if image is None:
+        return jsonify({"error": "Nessuna immagine passata"}), 400
+    # save the image to the upload folder
+    path = os.path.join(UPLOAD_FOLDER, datetime.now().strftime("%Y%m%d%H%M%S") + ".png")
+    image.save(path)
+    # get the image path
+    return os.path.abspath(path)
 
 @app.route('/predict', methods=['POST'])
 def predict():
     
-    if ss.ServerState().get_model() is None:
+    image = ss.ServerState().get_model() 
+    if image is None:
         return jsonify({"error": "Nessun modello selezionato"}), 400
 
-    path = takePhoto()
+    # get the passed image from the request
+    prediction = image.predict(saveImageToPath())
 
-    prediction = ss.ServerState().get_model().predict(path)
-    
-    return jsonify({
-        "prediction": prediction,
-        "image": getImageFormatToReturn(path)  
-    }), 200
-
-@app.route('/takePhoto', methods=['POST'])
-def takePhotoRoute():
-    path = takePhoto()
-    return  getImageFormatToReturn(path)
+    return jsonify({"prediction": prediction})
 
 @app.route('/currentModel', methods=['GET'])
 def currentModel():
     if ss.ServerState().get_model() is None:
-        return jsonify({}), 200
-    return jsonify({"model": ss.ServerState().get_model().name}), 200
+        return jsonify({}), 403
+    return jsonify({"model": ss.ServerState().get_model().name})
 
-
-
-def getImageFormatToReturn(path):
-    if not os.path.exists(path):
-        return jsonify({"error": "Errore nel salvataggio dell'immagine"}), 500
-
-    try:
-        image = Image.open(path)
-        image.verify()  # Controlla se è corrotto
-        image = Image.open(path).convert('RGB')  # Riapri e converti in RGB
-    except Exception as e:
-        return jsonify({"error": f"Errore nell'apertura dell'immagine: {str(e)}"}), 400
-
-    # Converte l'immagine in Base64
-    with open(path, "rb") as img_file:
-        img_base64 = base64.b64encode(img_file.read()).decode('utf-8')
-    return "data:image/jpeg;base64,"+img_base64
 
 if __name__ == "__main__":
     # start the server in debug
