@@ -2,7 +2,6 @@ import utilities.getClasses as getClasses
 import random
 import os
 import numpy as np
-import classes.FeatureExtractor as fe
 from torchvision import transforms
 # Crea i DataLoader per training e validazione
 from torch.utils.data import DataLoader

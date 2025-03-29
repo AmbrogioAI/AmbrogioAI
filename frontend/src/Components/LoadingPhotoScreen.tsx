@@ -1,11 +1,12 @@
 import { useState } from "react";
 import LoadingScreen from "./LoadingScreen";
-import { Backdrop, Button, Paper, Stack, Typography } from "@mui/material";
+import { Backdrop, Button, Paper, Typography } from "@mui/material";
 import React from "react";
 import { askToPredict } from "../routes/askToPredict";
 import { t } from "../translations/t";
 import { useDataContext } from "./Layout/DataProvider";
 import capturePhoto from "../Utils/takeAPhoto";
+import { useThemeContext } from "./Layout/ThemeProvider";
 
 enum Modes {
   singlePhoto = 0,
@@ -23,6 +24,8 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
   const [close, setClose] = useState(false);
   const [image, setImage] = useState("");
   const [prediction, setPrediction] = useState([] as number[]);
+  //get theme from ThemeProvider
+  const { isDarkMode } = useThemeContext();
 
   React.useEffect(() => {
     if (Modes.prediction === mode) {
@@ -58,51 +61,42 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
         <Paper
           style={{
             width: "80%",
-            height: "80%",
+            height: "90%",
             padding: "20px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexDirection: "column",
+            overflowY: "auto",
           }}
           elevation={3}
         >
-          <Stack
-            spacing={2}
-            direction={"column"}
-            justifyContent={"flex-start"}
-            alignItems={"center"}
-            overflow={"auto"}
-            width={"100%"}
-          >
-            <Typography variant="h5">
-              {t("ThisIsWhatISee", language)}
-            </Typography>
-            <img
+          <Typography variant="h5">{t("ThisIsWhatISee", language)}</Typography>
+          <img
+            style={{
+              width: "80%",
+              height: "80%",
+              objectFit: "contain",
+              borderRadius: "10px",
+            }}
+            src={image}
+          />
+          {prediction.length > 0 && (
+            <div
               style={{
-                width: "90%",
-                height: "90%",
-                objectFit: "contain",
-                borderRadius: "10px",
+                position: "absolute",
+                top: "100px",
+                backgroundColor: isDarkMode ? "black" : "white",
+                color: isDarkMode ? "white" : "black",
+                padding: "20px",
+                textAlign: "left",
+                borderRadius: "16px",
               }}
-              src={image}
-            />
-          </Stack>
-          <Stack
-            spacing={2}
-            direction={"column"}
-            justifyContent={"flex-start"}
-            alignItems={"center"}
-            overflow={"auto"}
-            width={"100%"}
-          >
-            <Typography variant="h5">{t("Prediction", language)}</Typography>
-            {prediction.map((item, index) => (
-              <Typography variant="h6" key={index}>
-                {t("Class" + index, language)}: {(item * 100).toFixed(2)} %
-              </Typography>
-            ))}
-          </Stack>
+            >
+              <Typography variant="h5">{t("Prediction", language)}</Typography>
+              {prediction.map((item, index) => (
+                <Typography variant="h6" key={index}>
+                  {t("Class" + index, language)}: {(item * 100).toFixed(2)}%
+                </Typography>
+              ))}
+            </div>
+          )}
           <Button
             variant="contained"
             color="primary"

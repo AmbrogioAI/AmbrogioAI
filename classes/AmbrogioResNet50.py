@@ -41,12 +41,6 @@ class AmbrogioNet50(Model):
         
         # imposta il learning rate scheduler
         self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=7, gamma=0.1)
-                
-    def setDevice(self):
-        # Verifica se è disponibile la GPU e imposta il device di conseguenza
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        print(f"Device: {'cuda' if torch.cuda.is_available() else 'cpu'}")
-        self.model = self.model.to(self.device)
         
     def optimizerResolver(self,mode:Optimazer) -> optim:
         if mode == Optimazer.Adam:
@@ -107,17 +101,6 @@ class AmbrogioNet50(Model):
                 print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
         #return self.model
-    
-    def save_model(self, path = "AmbrogioResNet50.pth"):
-        torch.save(self.model.state_dict(), path)
-        
-    def load_model(self, path = "AmbrogioResNet50.pth"):
-        import os    
-        root = os.path.dirname(os.path.abspath(__file__))
-        # get the absolute path of the "utilities" folder
-        root = os.path.dirname(root)
-        self.model.load_state_dict(torch.load(root+"/"+path,map_location=self.device))
-    
 
     def predict(self, imgPath):
         # Carica l'immagine e preparala per la predizione
@@ -134,11 +117,11 @@ class AmbrogioNet50(Model):
         with torch.no_grad():
             output = self.model(img)
             
-            # Calcola le probabilità applicando softmax all'output
-            probabilities = F.softmax(output, dim=1).squeeze()  # Riduce la dimensione extra
-
-            probabilities = [prob.item() for prob in probabilities]
-            
-            showPrediction(probabilities)
+        # Calcola le probabilità applicando softmax all'output
+        probabilities = F.softmax(output, dim=1).squeeze()  # Riduce la dimensione extra
+        
+        probabilities = [prob.item() for prob in probabilities]
+        
+        showPrediction(probabilities)
             
         return probabilities  # Restituisce le probabilità di tutte le classi come array

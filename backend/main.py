@@ -16,11 +16,11 @@ from flask_cors import CORS
 from flask import make_response
 from classes.AmbrogioResNet50 import Optimazer
 from classes import AmbrogioResNet50 as ar50
-from classes import AmbrogioSimple as simple
 import serverState as ss
 from utilities.PhotoTaker import takePhoto
 from PIL import Image
 import base64
+from classes.resNet50FromScratch import ResNet50
 
 
 app = Flask(__name__)
@@ -47,15 +47,13 @@ def choseAi():
             from multiprocessing import freeze_support
             freeze_support()
         modelChosen = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
-        modelChosen.load_model()
-        ss.ServerState().set_model(modelChosen)
         modelName = "AmbrogioNet50"
     else:
-        modelChosen = simple.AmbrogioSimple()
-        modelChosen.loadState()
-        ss.ServerState().set_model(modelChosen)
-        modelName = "AmbrogioNet50"
+        modelChosen = ResNet50(num_classes=3)
+        modelName = "AmbrogioResNet50Simple"
 
+    modelChosen.load_model()
+    ss.ServerState().set_model(modelChosen)
     return jsonify({"modelChosen": modelName})
     
 
@@ -65,6 +63,7 @@ def saveImageToPath():
         os.makedirs(UPLOAD_FOLDER)
 
     image = request.files['image']
+    print("POROCDIO")
     if image is None:
         return jsonify({"error": "Nessuna immagine passata"}), 400
     # save the image to the upload folder
@@ -76,12 +75,12 @@ def saveImageToPath():
 @app.route('/predict', methods=['POST'])
 def predict():
     
-    image = ss.ServerState().get_model() 
-    if image is None:
+    model = ss.ServerState().get_model() 
+    if model is None:
         return jsonify({"error": "Nessun modello selezionato"}), 400
 
     # get the passed image from the request
-    prediction = image.predict(saveImageToPath())
+    prediction = model.predict(saveImageToPath())
 
     return jsonify({"prediction": prediction})
 

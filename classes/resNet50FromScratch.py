@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from ModelInterface import Model
+from classes.ModelInterface import Model
 
 class BottleneckBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1, downsample=None):
@@ -39,6 +39,7 @@ class BottleneckBlock(nn.Module):
 class ResNet50(nn.Module,Model):
     def __init__(self, num_classes=1000):
         super(ResNet50, self).__init__()
+        self.name = 'ResNet50FromScratch'
         self.in_channels = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -68,6 +69,23 @@ class ResNet50(nn.Module,Model):
             layers.append(BottleneckBlock(self.in_channels, out_channels))
         
         return nn.Sequential(*layers)
+    
+    @classmethod
+    def load_model(cls, path="AmbrogioResNet50.pth"):
+        import os
+        root = os.path.dirname(os.path.abspath(__file__))
+        root = os.path.dirname(root)
+
+        device = cls.getDevice()
+        print(f"Loading model from {root}/{path} to device {device}")
+
+        state_dict = torch.load(root + "/" + path, map_location=device)
+
+        # Create an instance of the model and load the state_dict
+        model = cls(num_classes=3)  # Ensure cls() can be instantiated
+        model.load_state_dict(state_dict, strict=True)
+
+        print("Model successfully loaded!")  # Correct way to load state_dict
 
     def forward(self, x):
         x = self.conv1(x)
@@ -85,38 +103,55 @@ class ResNet50(nn.Module,Model):
         x = self.fc(x)
         
         return x
+    
+    def predict(self, imgPath):
+        # Assicurati che il modello sia in modalità eval
+        self.eval()
 
-# Test model
-model = ResNet50(num_classes=3)
-x = torch.randn(1, 3, 224, 224)
-output = model(x)
-print(output.shape)  # Should print torch.Size([1, 3])
+        # Disattiva il calcolo dei gradienti (non necessario per l'inferenza)
+        with torch.no_grad():
+            output = self(self.computeImage(imgPath))
 
-# image handling
+        # Converti l'output in probabilità con softmax
+        probabilities = torch.nn.functional.softmax(output[0], dim=0)
+        probabilities = [prob.item() for prob in probabilities]
+        print(f"Probailità: {probabilities}")
 
-from PIL import Image
-import torchvision.transforms as transforms
-import torch
+        return probabilities
 
-# Carica l'immagine
-image_path = "C:/Users/utente/Desktop/AmbrogioAI/DataSet/sportivo/sportivo20241029214242.png"
 
-# Assicurati che il modello sia in modalità eval
-model.eval()
+if __name__ == "__main__":
+    # Test model
+    model = ResNet50(num_classes=3)
+    x = torch.randn(1, 3, 224, 224)
+    output = model(x)
+    print(output.shape)  # Should print torch.Size([1, 3])
 
-# Disattiva il calcolo dei gradienti (non necessario per l'inferenza)
-with torch.no_grad():
-    output = model(model.computeImage(image_path))
+    # image handling
 
-# Converti l'output in probabilità con softmax
-probabilities = torch.nn.functional.softmax(output[0], dim=0)
+    from PIL import Image
+    import torchvision.transforms as transforms
+    import torch
 
-print(f"Probailità: {probabilities}")
+    # Carica l'immagine
+    image_path = "C:/Users/utente/Desktop/AmbrogioAI/DataSet/sportivo/sportivo20241029214242.png"
 
-# Definisci le classi
-class_labels = ["Elegante", "Sportivo", "Casual"]
+    # Assicurati che il modello sia in modalità eval
+    model.eval()
 
-# Trova la classe con la probabilità più alta
-predicted_class = class_labels[torch.argmax(probabilities).item()]
+    # Disattiva il calcolo dei gradienti (non necessario per l'inferenza)
+    with torch.no_grad():
+        output = model(model.computeImage(image_path))
 
-print(f"Classe Predetta: {predicted_class}")
+    # Converti l'output in probabilità con softmax
+    probabilities = torch.nn.functional.softmax(output[0], dim=0)
+
+    print(f"Probailità: {probabilities}")
+
+    # Definisci le classi
+    class_labels = ["Elegante", "Sportivo", "Casual"]
+
+    # Trova la classe con la probabilità più alta
+    predicted_class = class_labels[torch.argmax(probabilities).item()]
+
+    print(f"Classe Predetta: {predicted_class}")
