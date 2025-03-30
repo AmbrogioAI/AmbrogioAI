@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from classes.ModelInterface import Model
+from utilities.ShowPredictionTable import showPrediction
 
 class BottleneckBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1, downsample=None):
@@ -70,20 +71,15 @@ class ResNet50(nn.Module,Model):
         
         return nn.Sequential(*layers)
     
-    @classmethod
-    def load_model(cls, path="AmbrogioResNet50.pth"):
+    def load_model(self, path="AmbrogioResNet50.pth"):
         import os
         root = os.path.dirname(os.path.abspath(__file__))
         root = os.path.dirname(root)
 
-        device = cls.getDevice()
-        print(f"Loading model from {root}/{path} to device {device}")
-
-        state_dict = torch.load(root + "/" + path, map_location=device)
+        state_dict = torch.load(root + "/" + path, map_location=self.getDevice(), weights_only=True)
 
         # Create an instance of the model and load the state_dict
-        model = cls(num_classes=3)  # Ensure cls() can be instantiated
-        model.load_state_dict(state_dict, strict=True)
+        self.load_state_dict(state_dict,strict=True) 
 
         print("Model successfully loaded!")  # Correct way to load state_dict
 
@@ -115,7 +111,8 @@ class ResNet50(nn.Module,Model):
         # Converti l'output in probabilità con softmax
         probabilities = torch.nn.functional.softmax(output[0], dim=0)
         probabilities = [prob.item() for prob in probabilities]
-        print(f"Probailità: {probabilities}")
+
+        showPrediction(probabilities)
 
         return probabilities
 

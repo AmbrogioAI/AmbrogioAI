@@ -36,7 +36,7 @@ class Model:
         root = os.path.dirname(os.path.abspath(__file__))
         # get the absolute path of the "utilities" folder
         root = os.path.dirname(root)
-        self.model.load_state_dict(torch.load(root+"/"+path,map_location=self.device))
+        self.model.load_state_dict(torch.load(root+"/"+path,map_location=self.device,weights_only=True))
     
     @staticmethod
     def getDevice() ->  torch.device:
@@ -46,4 +46,5 @@ class Model:
         return device
     
     def setDevice(self):
-        self.model = self.model.to(Model.getDevice())
+        self.device = Model.getDevice()
+        self.model = self.model.to(self.device)

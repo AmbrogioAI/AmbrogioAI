@@ -183,4 +183,5 @@ class DataSetManager:
         dataloaders = {'train': train_loader, 'val': val_loader}
         dataset_sizes = {'train': len(train_dataset), 'val': len(val_dataset)}
         return dataloaders, dataset_sizes
+    
 
