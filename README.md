@@ -43,7 +43,7 @@ All'interno del [progetto](https://github.com/AmbrogioAI/AmbrogioAI/tree/bad9efe
 	Ci si aspetta che sia la versione più accurata ed è, inoltre, customizzabile tramite i classici parametri come learning rate e momentum. 
 - ResNet50FromScratch:
 	Soprannominata anche "AmbrogioSimple" questa CNN è sempre una ResNet-50 ma è senza alcun meccanismo di ottimizzazione, realizzata osservando l'architettura del Classificatore.
-	![[ResNet50Architecture.png]]
+	<img src="DocImages\ResNet50Architecture.png"/>
 ### Struttura dell'applicazione 
 - Server Python con flask:
 	presente nella cartella "backend" è presente il file main.py il quale crea l'applicazione flask e rende disponibili delle API per permettere al client di:
@@ -61,4 +61,8 @@ All'interno del [progetto](https://github.com/AmbrogioAI/AmbrogioAI/tree/bad9efe
 	presente nella cartella "front" permette di chiamare tutte le API di cui sopra e verificare tutte le risposte ricevute. 
 ### Mappa Delle Comunicazioni tra Client e Server Prototype
 Di seguito mostro una mappa rappresentate il giro che le richieste fanno dal client al server e viceversa.
-![[ConnectionsMapForPrototype.png]]
+<img src="DocImages\ConnectionsMapForPrototype.png"/>
+### Sviluppi Futuri
+- Sintetizzatore vocale per permettere la comunicazione con il server senza passare dal Front
+- Ampliare il dataset utilizzando le foto passate dal front così da permettere ad ambrogio di personalizzarsi e di migliorare in base all'utilizzatore.
+  - Non tutte le immagini verrebbero salvate, ma solo se l'utilizzatore lo desidera, inoltre viene chiesto all'utente se è soddisfatto della predizione eseguita da ambrogio, se no viene chiesto all'utente a quale classe apparterrebbe la foto appena scattata così da avere anche la label della nuova immagine.
