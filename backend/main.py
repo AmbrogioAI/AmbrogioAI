@@ -63,7 +63,6 @@ def saveImageToPath():
         os.makedirs(UPLOAD_FOLDER)
 
     image = request.files['image']
-    print("POROCDIO")
     if image is None:
         return jsonify({"error": "Nessuna immagine passata"}), 400
     # save the image to the upload folder
@@ -93,4 +92,4 @@ def currentModel():
 
 if __name__ == "__main__":
     # start the server in debug
-    app.run(debug=True)
+    app.run()

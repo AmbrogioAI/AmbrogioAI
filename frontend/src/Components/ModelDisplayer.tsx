@@ -13,7 +13,7 @@ function ModelDisplayer() {
   const [startLoading, setStartLoading] = useState(false);
   const [selectedMode, setSelectedMode] = useState(Modes.singlePhoto);
   const translateStr =
-    modelName + (Date.now() > 12 ? ".HelloNight" : ".HelloDay");
+    modelName + (new Date().getHours() > 18 ? ".HelloNight" : ".HelloDay");
 
   const handleShowPhoto = () => {
     setSelectedMode(Modes.singlePhoto);

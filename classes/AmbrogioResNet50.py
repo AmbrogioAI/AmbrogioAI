@@ -22,7 +22,7 @@ class Optimazer(Enum):
     
 
 class AmbrogioNet50(Model):
-    def __init__(self,lr=0.001, momentum=0.9, optimizer=Optimazer.StochasticGradientDescent, step_size=7, gamma=0.1):
+    def __init__(self,lr=0.001, momentum=0.9, optimizer=Optimazer.StochasticGradientDescent):
         self.name = 'AmbrogioNet50'
         self.model = models.resnet50(weights=ResNet50_Weights.DEFAULT)
         

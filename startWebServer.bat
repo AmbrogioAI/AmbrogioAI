@@ -14,4 +14,7 @@ cd ..
 :: cloudflared tunnel -url http://127.0.0.1:5000
 
 cd backend
+:: normal python script execution
+@REM start cmd /k python main.py && cloudflared tunnel -url http://127.0.0.1:5000
+:: gunicorn script execution
 start cmd /k python main.py && cloudflared tunnel -url http://127.0.0.1:5000

@@ -4,6 +4,7 @@ set REQUIREMENTS_FILE=dependencies.txt
 if exist %REQUIREMENTS_FILE% (
     echo Installazione delle dipendenze da %REQUIREMENTS_FILE%...
     pip install --upgrade pip
+    pip install gunicorn
     pip install tensorflow keras
     pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu118
     pip install -r %REQUIREMENTS_FILE%

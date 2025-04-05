@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoadingScreen from "./LoadingScreen";
 import { Backdrop, Button, Paper, Typography } from "@mui/material";
-import React from "react";
 import { askToPredict } from "../routes/askToPredict";
 import { t } from "../translations/t";
 import { useDataContext } from "./Layout/DataProvider";
@@ -24,36 +23,67 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
   const [close, setClose] = useState(false);
   const [image, setImage] = useState("");
   const [prediction, setPrediction] = useState([] as number[]);
-  //get theme from ThemeProvider
   const { isDarkMode } = useThemeContext();
 
-  React.useEffect(() => {
+  // Stato per il conto alla rovescia
+  const maxCountdown = 3; // Imposta il tempo del countdown in secondi
+  const [countdown, setCountdown] = useState(maxCountdown);
+
+  useEffect(() => {
     if (Modes.prediction === mode) {
-      askToPredict()
-        .then((res) => {
-          console.log(res.prediction);
-          setPrediction(res.prediction);
-          setImage(res.image);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
+      const interval = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+
+      setTimeout(() => {
+        clearInterval(interval); // Ferma il countdown
+        askToPredict()
+          .then((res) => {
+            setPrediction(res.prediction);
+            setImage(res.image);
+            setIsLoading(false);
+          })
+          .catch((err) => {
+            console.error(err);
+            setIsLoading(false);
+          });
+      }, maxCountdown * 1000);
+      return () => clearInterval(interval);
+    } else {
+      // Avvia il conto alla rovescia
+      const interval = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+
+      // Dopo 3 secondi, scatta la foto
+      setTimeout(() => {
+        clearInterval(interval); // Ferma il countdown
+        capturePhoto().then((res) => {
+          setImage(res!);
           setIsLoading(false);
         });
-    } else {
-      capturePhoto().then((res) => {
-        setImage(res!);
-        setIsLoading(false);
-      });
+      }, maxCountdown * 1000);
+
+      return () => clearInterval(interval);
     }
   }, []);
 
   return (
     <div style={{ marginTop: "0px !important" }}>
-      <LoadingScreen
-        isLoading={isLoading}
-        loadingText={t("LoadingPhoto", language)}
-      />
+      {countdown > 0 ? (
+        <Backdrop
+          sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+          open
+        >
+          <Typography variant="h2">{countdown}</Typography>
+        </Backdrop>
+      ) : (
+        <LoadingScreen
+          isLoading={isLoading}
+          loadingText={t("LoadingPhoto", language)}
+        />
+      )}
+
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
         open={!isLoading && !close}

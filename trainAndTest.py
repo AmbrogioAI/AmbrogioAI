@@ -78,11 +78,13 @@ if __name__ == '__main__':
         freeze_support()
     
     model = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
-    model.train_model(250)
-
+    model.train_model(50)
     print("Training complete")
     testModels()
     print("Testing complete")
     saveModelAnswer()
+    # model.load_model()
+    # basePath = r"C:\Users\utente\Desktop\ele.jpg"
+    # model.predict(basePath)
 
 
