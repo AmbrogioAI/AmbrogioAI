@@ -2,7 +2,7 @@
     "latency": "Latenza:  ",
     "Theme": "Tema",
     "Language": "Lingua",
-    "ResNet50Description": "Maggiordomo molto intelligente, fa errori raramente,e se li commette impara da essi personalizzandosi in base all'utilizzatore.",
+    "ResNet50Description": "Maggiordomo molto intelligente, fa errori raramente.",
     "SimpleDescription": "Maggiordomo molto semplice, ogni tanto potrebbe fare qualche errore, gli manca un po' di esperienza.",
     "ChooseModel": "Seleziona un modello tra quelli disponibili:",
     "noModel": "Nessun modello",

@@ -3,7 +3,7 @@
     "latency":"Latency:  ",
     "Theme":"Theme",
     "Language": "Language",
-    "ResNet50Description":"Very intelligent butler, makes mistakes rarely, and if he does, he learns from them by customizing himself according to the user.",
+    "ResNet50Description":"Very intelligent butler, makes mistakes rarely.",
     "SimpleDescription":"Very simple butler, sometimes he might make some mistakes, he lacks a bit of experience.",
     "ChooseModel":"Choose a model among the available ones:",
     "noModel":"No model",
