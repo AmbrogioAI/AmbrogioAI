@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 import utilities.getClasses as gc
 import utilities.DataSetManager as dsm
 from enum import Enum
+from classes.TestingMode import TestingMode
 from classes.ModelInterface import Model
 from utilities.ShowPredictionTable import showPrediction
 import torch
@@ -23,7 +24,8 @@ class Optimazer(Enum):
     Adam = 0
     RMSprop = 1
     StochasticGradientDescent = 2
-    
+
+
 
 class AmbrogioNet50(Model):
     def __init__(self,lr=0.001, momentum=0.9, optimizer=Optimazer.StochasticGradientDescent):
@@ -57,7 +59,7 @@ class AmbrogioNet50(Model):
         raise Exception("Optimizer not supported")
 
     
-    def train_model(self, num_epochs=100,patience=5,delta=0.001):
+    def train_model(self, num_epochs=100,patience=5,delta=0.001,mode = TestingMode.TestWithRealImages):
         '''
         Funzione per addestrare il modello
         :param num_epochs: numero di epoche per l'addestramento
@@ -65,7 +67,7 @@ class AmbrogioNet50(Model):
         :param delta: soglia minima per considerare l'avvenuta del miglioramento dopo una epoca
         '''
         dataManager = dsm.DataSetManager()
-        dataloaders, dataset_sizes = dataManager.getSetForRes50()
+        dataloaders, dataset_sizes = dataManager.getSetForRes50(mode = mode)
 
         # Inizializza le variabili per il monitoraggio del miglioramento
         best_acc = 0.0
@@ -131,9 +133,9 @@ class AmbrogioNet50(Model):
         Logger.logTagged("END TRAINING",f"Training completato! Miglioramento finale: {best_acc:.4f}")
         #return self.model
     
-    def test_model(self):
+    def test_model(self,mode = TestingMode.TestWithRealImages):
         dataManager = dsm.DataSetManager()
-        dataloaders, dataset_sizes = dataManager.getSetForRes50()
+        dataloaders, dataset_sizes = dataManager.getSetForRes50(mode = mode)
         self.model.eval()
         all_preds = []
         all_labels = []
@@ -154,7 +156,7 @@ class AmbrogioNet50(Model):
         Logger.logTagged("TESTING",f"Confusion Matrix:\n {cm}")
 
         # Report con precision, recall, f1-score per classe
-        report = classification_report(all_labels, all_preds, digits=4)
+        report = classification_report(all_labels, all_preds, digits=4,target_names=gc.getClasses())
         Logger.logTagged("TESTING",f"Classification Report:\n {report}")
 
         # Errore medio di classificazione

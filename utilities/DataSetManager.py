@@ -6,6 +6,7 @@ from torchvision import transforms
 # Crea i DataLoader per training e validazione
 from torch.utils.data import DataLoader
 from utilities.ImageTransformer import CustomImageDataset
+from classes.TestingMode import TestingMode
 
 class DataSetManager:
     def __init__(self):
@@ -147,17 +148,21 @@ class DataSetManager:
             targets[i] = targets[i].index(1)
         return targets
     
-    def partitionDataSetRandomly(self,percTraining=0.7,percValidation=0.3):
+    def partitionDataSetRandomly(self,percTraining=0.7,percValidation=0.2):
         '''
         partition the dataset into training, validation and test set
         '''
         # partition the dataset into training, validation and test set
         images = self.getAllImages()
         random.shuffle(images)
-        trainingSet = images[:int(len(images)*percTraining)]
-        validationSet = images[int(len(images)*percTraining):int(len(images)*percTraining)+int(len(images)*percValidation)]
-        testSet = images[int(len(images)*percTraining)+int(len(images)*percValidation):]
-        
+
+        train_end = int(len(images) * percTraining)
+        val_end = train_end + int(len(images) * percValidation)
+
+        trainingSet = images[:train_end]
+        validationSet = images[train_end:val_end]
+        testSet = images[val_end:]
+
         return trainingSet,validationSet,testSet
     
     def partitionDataSetEqualy(self,percTraining=0.7,percValidation=0.3):
@@ -206,10 +211,15 @@ class DataSetManager:
         return classes[target.index(1)]
     
     
-    def getSetForRes50(self):
+    def getSetForRes50(self,mode = TestingMode.TestWithRealImages):
         # Ottieni i dataset
         
-        trainingSet, validationSet, testSet = self.partitionDataSetEqualy()
+        trainingSet, validationSet, testSet = [[] for _ in range(3)]
+
+        if mode == TestingMode.TestWithRealImages:
+            trainingSet, validationSet, testSet = self.partitionDataSetEqualy()
+        elif mode == TestingMode.TestWithRandomImages:
+            trainingSet, validationSet, testSet = self.partitionDataSetRandomly()
 
         # Funzione di trasformazione delle immagini
 

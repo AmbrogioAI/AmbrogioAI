@@ -1,6 +1,7 @@
 from classes.AmbrogioResNet50 import Optimazer
 from utilities import DataSetManager as dsm
 from classes import AmbrogioResNet50 as ar50
+from classes.TestingMode import TestingMode
 from classes.resNet50FromScratch import ResNet50 as ResNet50FromScratch
 import os
 from matplotlib import pyplot as plt
@@ -34,9 +35,9 @@ if __name__ == '__main__':
     Logger.resetFile()
 
     model = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
-    model.train_model()
+    model.train_model(mode = TestingMode.TestWithRandomImages)
     Logger.logTagged("INFO","Training complete")
-    model.test_model()
+    model.test_model(mode = TestingMode.TestWithRandomImages)
     Logger.logTagged("INFO","Testing complete")
     saveModelAnswer()
 
