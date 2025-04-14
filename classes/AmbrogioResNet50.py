@@ -13,6 +13,10 @@ import torch
 import torch.nn.functional as F
 from torchvision import transforms
 from PIL import Image
+from sklearn.metrics import classification_report, confusion_matrix
+import numpy as np
+from utilities.Logger import Logger
+import utilities.getClasses as getClasses
 
 class Optimazer(Enum):
     """ottimizzatori supportati dal modello"""
@@ -52,12 +56,24 @@ class AmbrogioNet50(Model):
         
         raise Exception("Optimizer not supported")
 
-    def train_model(self, num_epochs=25):
+    
+    def train_model(self, num_epochs=100,patience=5,delta=0.001):
+        '''
+        Funzione per addestrare il modello
+        :param num_epochs: numero di epoche per l'addestramento
+        :param patience: numero di epoche senza miglioramento prima di fermare l'addestramento
+        :param delta: soglia minima per considerare l'avvenuta del miglioramento dopo una epoca
+        '''
         dataManager = dsm.DataSetManager()
         dataloaders, dataset_sizes = dataManager.getSetForRes50()
+
+        # Inizializza le variabili per il monitoraggio del miglioramento
+        best_acc = 0.0
+        epochs_without_improvement = 0
+
         for epoch in range(num_epochs):
-            print(f'Epoch {epoch}/{num_epochs - 1}')
-            print('-' * 10)
+            Logger.logTagged("TRAINING",f'Epoch {epoch}/{num_epochs - 1}')
+            Logger.log('-' * 10)
 
             # Ogni epoca ha una fase di addestramento e una di validazione
             for phase in ['train', 'val']:
@@ -98,9 +114,53 @@ class AmbrogioNet50(Model):
                 epoch_loss = running_loss / dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
-                print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+                Logger.logTagged("TRAINING",f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
+                if phase == 'val':
+                    if epoch_acc > best_acc + delta:
+                        best_acc = epoch_acc
+                        epochs_without_improvement = 0
+                        Logger.logTagged("TRAINING",f"Nuovo miglioramento: {best_acc:.4f}")
+                    else:
+                        epochs_without_improvement += 1
+                        Logger.logTagged("TRAINING",f"Nessun miglioramento: {epoch_acc:.4f} (best: {best_acc:.4f})")
+
+                    if epochs_without_improvement >= patience:
+                        Logger.logTagged("END TRAINING",f"Early stopping! Nessun miglioramento per {patience} epoche consecutive.")
+                        return
+        Logger.logTagged("END TRAINING",f"Training completato! Miglioramento finale: {best_acc:.4f}")
         #return self.model
+    
+    def test_model(self):
+        dataManager = dsm.DataSetManager()
+        dataloaders, dataset_sizes = dataManager.getSetForRes50()
+        self.model.eval()
+        all_preds = []
+        all_labels = []
+
+        with torch.no_grad():
+            for inputs, labels in dataloaders['test']:
+                inputs = inputs.to(self.device)
+                labels = labels.to(self.device)
+
+                outputs = self.model(inputs)
+                _, preds = torch.max(outputs, 1)
+
+                all_preds.extend(preds.cpu().numpy())
+                all_labels.extend(labels.cpu().numpy())
+        
+        # Confusion Matrix
+        cm = confusion_matrix(all_labels, all_preds)
+        Logger.logTagged("TESTING",f"Confusion Matrix:\n {cm}")
+
+        # Report con precision, recall, f1-score per classe
+        report = classification_report(all_labels, all_preds, digits=4)
+        Logger.logTagged("TESTING",f"Classification Report:\n {report}")
+
+        # Errore medio di classificazione
+        accuracy = np.mean(np.array(all_preds) == np.array(all_labels))
+        classification_error = 1.0 - accuracy
+        Logger.logTagged("TESTING",f"Errore medio di classificazione: {classification_error:.4f}")
 
     def predict(self, imgPath):
         # Carica l'immagine e preparala per la predizione
@@ -110,7 +170,7 @@ class AmbrogioNet50(Model):
         img = img.unsqueeze(0)  # Aggiunge una dimensione per il batch
         img = img.to(self.device)
         
-        print(f'Predicting image {imgPath} ...')
+        Logger.logTagged("PREDICTING",f'Predicting image {imgPath} ...')
         
         # Esegui la predizione
         self.model.eval()

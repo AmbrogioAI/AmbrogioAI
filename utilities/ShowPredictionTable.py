@@ -1,6 +1,7 @@
 import numpy as np
 import utilities.getClasses as getClasses
 from prettytable import PrettyTable
+from utilities.Logger import Logger
 
 def showPrediction(predictions):
         table = PrettyTable()
@@ -15,6 +16,6 @@ def showPrediction(predictions):
             table.add_row([getClasses.getClasses()[i],predictions[i]])
 
         # Stampa la tabella
-        print(table)
+        Logger.logTagged("PREDICTING",table)
         
-        print(f"La classe predetta è: {getClasses.getClasses()[np.argmax(predictions)]}")
+        Logger.logTagged("PREDICTING",f"La classe predetta è: {getClasses.getClasses()[np.argmax(predictions)]}")
