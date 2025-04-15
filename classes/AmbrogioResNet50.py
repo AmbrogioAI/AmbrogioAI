@@ -17,7 +17,7 @@ from PIL import Image
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 from utilities.Logger import Logger
-import utilities.getClasses as getClasses
+import rembg
 
 class Optimazer(Enum):
     """ottimizzatori supportati dal modello"""
@@ -132,6 +132,34 @@ class AmbrogioNet50(Model):
                         return
         Logger.logTagged("END TRAINING",f"Training completato! Miglioramento finale: {best_acc:.4f}")
         #return self.model
+
+
+    def predict(self, imgPath):
+        
+        # Carica l'immagine e preparala per la predizione
+        img = Image.open(imgPath).convert('RGB')
+        # img = Image.fromarray(rembg.remove(np.array(img)))
+        img = img.resize((224, 224))
+        img = transforms.ToTensor()(img)
+        img = img.unsqueeze(0)  # Aggiunge una dimensione per il batch
+        img = img.to(self.device)
+        
+        Logger.logTagged("PREDICTING",f'Predicting image {imgPath} ...')
+        
+        # Esegui la predizione
+        self.model.eval()
+        with torch.no_grad():
+            output = self.model(img)
+            
+        # Calcola le probabilità applicando softmax all'output
+        probabilities = F.softmax(output, dim=1).squeeze()  # Riduce la dimensione extra
+        
+        probabilities = [prob.item() for prob in probabilities]
+        
+        showPrediction(probabilities)
+            
+        return probabilities  # Restituisce le probabilità di tutte le classi come array
+    
     
     def test_model(self,mode = TestingMode.TestWithRealImages):
         dataManager = dsm.DataSetManager()
@@ -163,27 +191,3 @@ class AmbrogioNet50(Model):
         accuracy = np.mean(np.array(all_preds) == np.array(all_labels))
         classification_error = 1.0 - accuracy
         Logger.logTagged("TESTING",f"Errore medio di classificazione: {classification_error:.4f}")
-
-    def predict(self, imgPath):
-        # Carica l'immagine e preparala per la predizione
-        img = Image.open(imgPath).convert('RGB')
-        img = img.resize((224, 224))
-        img = transforms.ToTensor()(img)
-        img = img.unsqueeze(0)  # Aggiunge una dimensione per il batch
-        img = img.to(self.device)
-        
-        Logger.logTagged("PREDICTING",f'Predicting image {imgPath} ...')
-        
-        # Esegui la predizione
-        self.model.eval()
-        with torch.no_grad():
-            output = self.model(img)
-            
-        # Calcola le probabilità applicando softmax all'output
-        probabilities = F.softmax(output, dim=1).squeeze()  # Riduce la dimensione extra
-        
-        probabilities = [prob.item() for prob in probabilities]
-        
-        showPrediction(probabilities)
-            
-        return probabilities  # Restituisce le probabilità di tutte le classi come array

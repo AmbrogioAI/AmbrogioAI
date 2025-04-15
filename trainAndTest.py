@@ -35,9 +35,9 @@ if __name__ == '__main__':
     Logger.resetFile()
 
     model = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
-    model.train_model(mode = TestingMode.TestWithRandomImages)
+    model.train_model(mode = TestingMode.TestWithRealImages)
     Logger.logTagged("INFO","Training complete")
-    model.test_model(mode = TestingMode.TestWithRandomImages)
+    model.test_model(mode = TestingMode.TestWithRealImages)
     Logger.logTagged("INFO","Testing complete")
     saveModelAnswer()
 
