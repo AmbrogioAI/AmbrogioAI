@@ -17,8 +17,8 @@ export default async function capturePhoto() {
     video.play();
 
     // Imposta le dimensioni della canvas
-    canvas.width = 448;
-    canvas.height = 448;
+    canvas.width = 1920;
+    canvas.height = 1080;
 
     // Verifica che il context sia stato creato correttamente
     if (!context) {
