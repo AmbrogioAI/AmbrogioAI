@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchvision import datasets, models, transforms
+from torchvision import models, transforms
 from torchvision.models import ResNet50_Weights
-from torch.utils.data import DataLoader
 import utilities.getClasses as gc
 import utilities.DataSetManager as dsm
 from enum import Enum
@@ -17,7 +16,7 @@ from PIL import Image
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 from utilities.Logger import Logger
-import rembg
+from utilities.plotConfusionMatrix import plotConfusionMatrix
 
 class Optimazer(Enum):
     """ottimizzatori supportati dal modello"""
@@ -180,8 +179,7 @@ class AmbrogioNet50(Model):
                 all_labels.extend(labels.cpu().numpy())
         
         # Confusion Matrix
-        cm = confusion_matrix(all_labels, all_preds)
-        Logger.logTagged("TESTING",f"Confusion Matrix:\n {cm}")
+        plotConfusionMatrix(all_preds, all_labels, title='Confusion Matrix - AmbrogioResNet50', cmap='Blues')
 
         # Report con precision, recall, f1-score per classe
         report = classification_report(all_labels, all_preds, digits=4,target_names=gc.getClasses())

@@ -12,3 +12,4 @@ graphviz
 opencv-python
 flask
 flask-cors
+rembg

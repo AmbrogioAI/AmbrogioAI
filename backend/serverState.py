@@ -1,8 +1,10 @@
 from classes.ModelInterface import Model
+import rembg
 
 class ServerState:
     modelChosen = None
     _instance = None
+    session = rembg.new_session(model_name="u2net_cloth_seg")
     
     def __new__(cls):
         if cls._instance is None:

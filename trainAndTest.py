@@ -34,9 +34,12 @@ if __name__ == '__main__':
         freeze_support()
     Logger.resetFile()
 
-    model = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
-    model.train_model(mode = TestingMode.TestWithRealImages)
-    Logger.logTagged("INFO","Training complete")
+    model = ar50.AmbrogioNet50(optimizer=Optimazer.StochasticGradientDescent)
+    if input("Do you want to train the model? (y/n): ").lower() == 'y':
+        model.train_model(mode = TestingMode.TestWithRealImages)
+        Logger.logTagged("INFO","Training complete")
+    else:
+        model.load_model()
     model.test_model(mode = TestingMode.TestWithRealImages)
     Logger.logTagged("INFO","Testing complete")
     saveModelAnswer()

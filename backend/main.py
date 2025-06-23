@@ -65,11 +65,29 @@ def saveImageToPath():
     image = request.files['image']
     if image is None:
         return jsonify({"error": "Nessuna immagine passata"}), 400
+    
     # save the image to the upload folder
     path = os.path.join(UPLOAD_FOLDER, datetime.now().strftime("%Y%m%d%H%M%S") + ".png")
     image.save(path)
     # get the image path
-    return os.path.abspath(path)
+    path = os.path.abspath(path)
+    # remove the background from the image with rembg
+    # Rimuove lo sfondo
+    from PIL import Image
+    import rembg
+    import numpy as np
+
+    arr = Image.open(path)
+    input_array = np.array(arr)
+    output_array = rembg.remove(input_array)#,session=ss.ServerState().session)
+    output_image = Image.fromarray(output_array)
+
+    # Salva l'immagine senza sfondo
+    no_bg_path = path.replace(".png", "_nobg.png")
+    output_image.save(no_bg_path)
+
+    return no_bg_path
+
 
 @app.route('/predict', methods=['POST'])
 def predict():

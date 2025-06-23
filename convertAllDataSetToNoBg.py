@@ -9,8 +9,8 @@ def remove_background(input_path):
     Rimuove lo sfondo da un'immagine e la sovrascrive con una versione PNG trasparente.
     """
     # Carica l'immagine
-    diocane = os.path.abspath(input_path)
-    input_image = Image.open(diocane)
+    img = os.path.abspath(input_path)
+    input_image = Image.open(img)
     input_array = np.array(input_image)
 
     # Rimuove lo sfondo
