@@ -12,6 +12,173 @@ class DataSetManager:
     def __init__(self):
         self.imagesPath = "DataSet/"
         self.jsonPath = "DataSet\dataSet.json"
+    
+    def getAddedImages(self):
+        added_casual = [
+                "casual/2025-04-21_04-08-24.png",
+                "casual/20250416_195459_0.png",
+                "casual/20250416_195459_1.png",
+                "casual/20250416_195459_10.png",
+                "casual/20250416_195459_11.png",
+                "casual/20250416_195459_12.png",
+                "casual/20250416_195459_13.png",
+                "casual/20250416_195459_14.png",
+                "casual/20250416_195459_15.png",
+                "casual/20250416_195459_16.png",
+                "casual/20250416_195459_17.png",
+                "casual/20250416_195459_2.png",
+                "casual/20250416_195459_3.png",
+                "casual/20250416_195459_4.png",
+                "casual/20250416_195459_5.png",
+                "casual/20250416_195459_6.png",
+                "casual/20250416_195459_7.png",
+                "casual/20250416_195459_8.png",
+                "casual/20250416_195459_9.png",
+                "casual/20250421_024422_0.png",
+                "casual/20250421_024422_1.png",
+                "casual/20250421_024422_10.png",
+                "casual/20250421_024422_11.png",
+                "casual/20250421_024422_12.png",
+                "casual/20250421_024422_13.png",
+                "casual/20250421_024422_14.png",
+                "casual/20250421_024422_15.png",
+                "casual/20250421_024422_16.png",
+                "casual/20250421_024422_17.png",
+                "casual/20250421_024422_18.png",
+                "casual/20250421_024422_19.png",
+                "casual/20250421_024422_2.png",
+                "casual/20250421_024422_3.png",
+                "casual/20250421_024422_4.png",
+                "casual/20250421_024422_5.png",
+                "casual/20250421_024422_6.png",
+                "casual/20250421_024422_7.png",
+                "casual/20250421_024422_8.png",
+                "casual/20250421_024422_9.png",
+                "casual/20250421_032523_0.png",
+                "casual/20250421_032523_1.png",
+                "casual/20250421_032523_2.png",
+                "casual/20250421_032523_3.png",
+                "casual/20250421_032523_4.png",
+                "casual/20250421_032523_5.png",
+                "casual/20250421_032523_6.png",
+                "casual/20250421_032523_7.png",
+                "casual/20250421_032523_9.png"
+        ]
+        added_elegante= [
+                "elegante/20250416_195459_0.png",
+                "elegante/20250416_195459_1.png",
+                "elegante/20250416_195459_10.png",
+                "elegante/20250416_195459_11.png",
+                "elegante/20250416_195459_12.png",
+                "elegante/20250416_195459_13.png",
+                "elegante/20250416_195459_14.png",
+                "elegante/20250416_195459_15.png",
+                "elegante/20250416_195459_16.png",
+                "elegante/20250416_195459_17.png",
+                "elegante/20250416_195459_2.png",
+                "elegante/20250416_195459_3.png",
+                "elegante/20250416_195459_4.png",
+                "elegante/20250416_195459_5.png",
+                "elegante/20250416_195459_6.png",
+                "elegante/20250416_195459_7.png",
+                "elegante/20250416_195459_8.png",
+                "elegante/20250416_195459_9.png",
+                "elegante/20250421_024422_0.png",
+                "elegante/20250421_024422_1.png",
+                "elegante/20250421_024422_10.png",
+                "elegante/20250421_024422_11.png",
+                "elegante/20250421_024422_12.png",
+                "elegante/20250421_024422_13.png",
+                "elegante/20250421_024422_14.png",
+                "elegante/20250421_024422_15.png",
+                "elegante/20250421_024422_16.png",
+                "elegante/20250421_024422_17.png",
+                "elegante/20250421_024422_18.png",
+                "elegante/20250421_024422_19.png",
+                "elegante/20250421_024422_2.png",
+                "elegante/20250421_024422_3.png",
+                "elegante/20250421_024422_4.png",
+                "elegante/20250421_024422_5.png",
+                "elegante/20250421_024422_6.png",
+                "elegante/20250421_024422_7.png",
+                "elegante/20250421_024422_8.png",
+                "elegante/20250421_024422_9.png",
+                "elegante/20250421_032523_0.png",
+                "elegante/20250421_032523_1.png",
+                "elegante/20250421_032523_2.png",
+                "elegante/20250421_032523_3.png",
+                "elegante/20250421_032523_4.png",
+                "elegante/20250421_032523_5.png",
+                "elegante/20250421_032523_6.png",
+                "elegante/20250421_032523_7.png",
+                "elegante/20250421_032523_8.png",
+                "elegante/20250421_032523_9.png"
+        ]
+        added_sportivo= [
+                "sportivo/20250416_195459_0.png",
+                "sportivo/20250416_195459_1.png",
+                "sportivo/20250416_195459_10.png",
+                "sportivo/20250416_195459_11.png",
+                "sportivo/20250416_195459_12.png",
+                "sportivo/20250416_195459_13.png",
+                "sportivo/20250416_195459_14.png",
+                "sportivo/20250416_195459_15.png",
+                "sportivo/20250416_195459_16.png",
+                "sportivo/20250416_195459_17.png",
+                "sportivo/20250416_195459_2.png",
+                "sportivo/20250416_195459_3.png",
+                "sportivo/20250416_195459_4.png",
+                "sportivo/20250416_195459_5.png",
+                "sportivo/20250416_195459_6.png",
+                "sportivo/20250416_195459_7.png",
+                "sportivo/20250416_195459_8.png",
+                "sportivo/20250416_195459_9.png",
+                "sportivo/20250421_024422_0.png",
+                "sportivo/20250421_024422_1.png",
+                "sportivo/20250421_024422_10.png",
+                "sportivo/20250421_024422_11.png",
+                "sportivo/20250421_024422_12.png",
+                "sportivo/20250421_024422_13.png",
+                "sportivo/20250421_024422_14.png",
+                "sportivo/20250421_024422_15.png",
+                "sportivo/20250421_024422_16.png",
+                "sportivo/20250421_024422_17.png",
+                "sportivo/20250421_024422_18.png",
+                "sportivo/20250421_024422_19.png",
+                "sportivo/20250421_024422_2.png",
+                "sportivo/20250421_024422_3.png",
+                "sportivo/20250421_024422_4.png",
+                "sportivo/20250421_024422_5.png",
+                "sportivo/20250421_024422_6.png",
+                "sportivo/20250421_024422_7.png",
+                "sportivo/20250421_024422_8.png",
+                "sportivo/20250421_024422_9.png",
+                "sportivo/20250421_032523_0.png",
+                "sportivo/20250421_032523_1.png",
+                "sportivo/20250421_032523_2.png",
+                "sportivo/20250421_032523_3.png",
+                "sportivo/20250421_032523_4.png",
+                "sportivo/20250421_032523_5.png",
+                "sportivo/20250421_032523_6.png",
+                "sportivo/20250421_032523_7.png",
+                "sportivo/20250421_032523_8.png",
+                "sportivo/20250421_032523_9.png"
+        ]
+        
+        return added_casual, added_elegante, added_sportivo
+        
+    def getAllRealImages(self):
+        """
+        Restituisce tutti i percorsi delle immagini reali nel dataset.
+        """
+        added_casual, added_elegante, added_sportivo = self.getAddedImages()
+        casual,ele,sport = self.getTestSetPaths()
+        maxLen = max(len(added_casual),len(added_elegante),len(added_sportivo))
+        
+        addedImages = added_casual[:maxLen] + added_elegante[:maxLen] + added_sportivo[:maxLen]
+        addedImages = [self.imagesPath + i for i in addedImages]
+        return addedImages + casual + ele + sport
+        
 
     def getTestSetPaths(self):
         casualTest = [
@@ -201,6 +368,21 @@ class DataSetManager:
         ValidationSet = casual[int(percMin):int(percMin+minLen*percValidation)] + elegante[int(percMin):int(percMin+minLen*percValidation)] + sport[int(percMin):int(percMin+minLen*percValidation)]
         
         return TrainingSet,ValidationSet,testSet
+    
+    def partitionOnlyRealImages(self):
+        """
+        Restituisce solo immagini reali divise in train/val/test.
+        Suppone che le immagini reali abbiano un pattern identificabile nel path o nome.
+        """
+
+        real_images = self.getAllRealImages()
+        random.shuffle(real_images)
+
+        from sklearn.model_selection import train_test_split
+        train, temp = train_test_split(real_images, test_size=0.4, random_state=42)
+        val, test = train_test_split(temp, test_size=0.5, random_state=42)
+
+        return train, val, test
         
     def resolveTarget(self,target):
         '''
@@ -220,6 +402,8 @@ class DataSetManager:
             trainingSet, validationSet, testSet = self.partitionDataSetEqualy()
         elif mode == TestingMode.TestWithRandomImages:
             trainingSet, validationSet, testSet = self.partitionDataSetRandomly()
+        elif mode == TestingMode.OnlyRealImages:
+            trainingSet, validationSet, testSet = self.partitionOnlyRealImages()
 
         # Funzione di trasformazione delle immagini
 

@@ -7,8 +7,8 @@ export default async function capturePhoto() {
     // Accendi la fotocamera
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        width: { ideal: 1920 },
-        height: { ideal: 1080 },
+        width: { ideal: 1036.6 },
+        height: { ideal: 1087.8 },
         frameRate: { ideal: 60 },
       },
     });
@@ -17,8 +17,8 @@ export default async function capturePhoto() {
     video.play();
 
     // Imposta le dimensioni della canvas
-    canvas.width = 1920;
-    canvas.height = 1080;
+    canvas.width = 1036.6;
+    canvas.height = 1087.8;
 
     // Verifica che il context sia stato creato correttamente
     if (!context) {

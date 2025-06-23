@@ -13,7 +13,7 @@ import torch
 import torch.nn.functional as F
 from torchvision import transforms
 from PIL import Image
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, f1_score
 import numpy as np
 from utilities.Logger import Logger
 from utilities.plotConfusionMatrix import plotConfusionMatrix
@@ -27,7 +27,7 @@ class Optimazer(Enum):
 
 
 class AmbrogioNet50(Model):
-    def __init__(self,lr=0.001, momentum=0.9, optimizer=Optimazer.StochasticGradientDescent):
+    def __init__(self,lr=0.001, momentum=0.95, optimizer=Optimazer.Adam):
         self.name = 'AmbrogioNet50'
         self.model = models.resnet50(weights=ResNet50_Weights.DEFAULT)
         
@@ -69,7 +69,7 @@ class AmbrogioNet50(Model):
         dataloaders, dataset_sizes = dataManager.getSetForRes50(mode = mode)
 
         # Inizializza le variabili per il monitoraggio del miglioramento
-        best_acc = 0.0
+        best_F1 = 0.0
         epochs_without_improvement = 0
 
         for epoch in range(num_epochs):
@@ -85,6 +85,8 @@ class AmbrogioNet50(Model):
 
                 running_loss = 0.0
                 running_corrects = 0
+                all_preds = []
+                all_labels = []
 
                 # Itera sui dati
                 for inputs, labels in dataloaders[phase]:
@@ -108,28 +110,31 @@ class AmbrogioNet50(Model):
                     # Statistiche
                     running_loss += loss.item() * inputs.size(0)
                     running_corrects += torch.sum(preds == labels.data)
+                    all_preds.extend(preds.cpu().numpy())
+                    all_labels.extend(labels.cpu().numpy())
 
                 if phase == 'train':
                     self.scheduler.step()
 
                 epoch_loss = running_loss / dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / dataset_sizes[phase]
+                epoch_f1 = f1_score(all_labels, all_preds, average='macro')
 
-                Logger.logTagged("TRAINING",f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+                Logger.logTagged("TRAINING",f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f} F1: {epoch_f1:.4f}')
 
                 if phase == 'val':
-                    if epoch_acc > best_acc + delta:
-                        best_acc = epoch_acc
+                    if epoch_acc > best_F1 + delta:
+                        best_F1 = epoch_f1
                         epochs_without_improvement = 0
-                        Logger.logTagged("TRAINING",f"Nuovo miglioramento: {best_acc:.4f}")
+                        Logger.logTagged("TRAINING",f"Nuovo miglioramento F1 macro: {best_F1:.4f}")
                     else:
                         epochs_without_improvement += 1
-                        Logger.logTagged("TRAINING",f"Nessun miglioramento: {epoch_acc:.4f} (best: {best_acc:.4f})")
+                        Logger.logTagged("TRAINING",f"Nessun miglioramento F1 macro: {epoch_f1:.4f} (best: {best_F1:.4f})")
 
                     if epochs_without_improvement >= patience:
                         Logger.logTagged("END TRAINING",f"Early stopping! Nessun miglioramento per {patience} epoche consecutive.")
                         return
-        Logger.logTagged("END TRAINING",f"Training completato! Miglioramento finale: {best_acc:.4f}")
+        Logger.logTagged("END TRAINING",f"Training completato! Miglioramento finale F1 macro: {best_F1:.4f}")
         #return self.model
 
 
@@ -160,7 +165,7 @@ class AmbrogioNet50(Model):
         return probabilities  # Restituisce le probabilità di tutte le classi come array
     
     
-    def test_model(self,mode = TestingMode.TestWithRealImages):
+    def test_model(self,mode = TestingMode.TestWithRealImages,printConfusionMatrix = True):
         dataManager = dsm.DataSetManager()
         dataloaders, dataset_sizes = dataManager.getSetForRes50(mode = mode)
         self.model.eval()
@@ -179,7 +184,8 @@ class AmbrogioNet50(Model):
                 all_labels.extend(labels.cpu().numpy())
         
         # Confusion Matrix
-        plotConfusionMatrix(all_preds, all_labels, title='Confusion Matrix - AmbrogioResNet50', cmap='Blues')
+        if printConfusionMatrix:
+            plotConfusionMatrix(all_preds, all_labels, title='Confusion Matrix - ResNet50', cmap='Blues')
 
         # Report con precision, recall, f1-score per classe
         report = classification_report(all_labels, all_preds, digits=4,target_names=gc.getClasses())
@@ -189,3 +195,4 @@ class AmbrogioNet50(Model):
         accuracy = np.mean(np.array(all_preds) == np.array(all_labels))
         classification_error = 1.0 - accuracy
         Logger.logTagged("TESTING",f"Errore medio di classificazione: {classification_error:.4f}")
+        return accuracy

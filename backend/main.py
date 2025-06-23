@@ -13,14 +13,14 @@ sys.path.insert(0, BASE_DIR)
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask import make_response
 from classes.AmbrogioResNet50 import Optimazer
 from classes import AmbrogioResNet50 as ar50
 import serverState as ss
-from utilities.PhotoTaker import takePhoto
 from PIL import Image
-import base64
 from classes.resNet50FromScratch import ResNet50
+from PIL import Image
+import rembg
+import numpy as np
 
 
 app = Flask(__name__)
@@ -72,14 +72,9 @@ def saveImageToPath():
     # get the image path
     path = os.path.abspath(path)
     # remove the background from the image with rembg
-    # Rimuove lo sfondo
-    from PIL import Image
-    import rembg
-    import numpy as np
-
     arr = Image.open(path)
     input_array = np.array(arr)
-    output_array = rembg.remove(input_array)#,session=ss.ServerState().session)
+    output_array = rembg.remove(input_array)
     output_image = Image.fromarray(output_array)
 
     # Salva l'immagine senza sfondo
