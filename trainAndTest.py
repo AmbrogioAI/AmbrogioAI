@@ -36,13 +36,13 @@ if __name__ == '__main__':
 
     model = ar50.AmbrogioNet50()
     if input("Do you want to train the model? (y/n): ").lower() == 'y':
-        model.train_model(mode = TestingMode.TestWithRealImages)
-        Logger.logTagged("INFO","Training completed, starting the fine tuning phase...")
-        model.train_model(num_epochs=20, patience=4, mode=TestingMode.OnlyRealImages)        
-        Logger.logTagged("INFO","Fine Tuning with Only Real Images completed, starting the Testing phase...")
+        model.train_model(mode = TestingMode.TestWithRealImages,earlyStoppingType=ar50.EarlyStoppingType.F1_Score)
+        # Logger.logTagged("INFO","Training completed, starting the fine tuning phase...")
+        # model.train_model(num_epochs=20, patience=4, mode=TestingMode.OnlyRealImages)        
+        # Logger.logTagged("INFO","Fine Tuning with Only Real Images completed, starting the Testing phase...")
     else:
         model.load_model()
-    model.test_model(mode = TestingMode.TestWithRealImages,printConfusionMatrix=False)
+    model.test_model(mode = TestingMode.TestWithRealImages)
     Logger.logTagged("INFO","Testing complete")
     saveModelAnswer()
     model = ResNet50FromScratch(num_classes=3)

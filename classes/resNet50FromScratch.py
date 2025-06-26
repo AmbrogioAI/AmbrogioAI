@@ -76,7 +76,7 @@ class ResNet50(nn.Module,Model):
         root = os.path.dirname(os.path.abspath(__file__))
         root = os.path.dirname(root)
 
-        state_dict = torch.load(root + "/" + path, map_location=self.getDevice(), weights_only=True)
+        state_dict = torch.load(root + "/" + path, map_location=self.getDevice())
 
         # Create an instance of the model and load the state_dict
         self.load_state_dict(state_dict,strict=True) 

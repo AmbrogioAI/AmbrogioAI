@@ -141,6 +141,8 @@ class AmbrogioNet50(Model):
                         else:
                             epochs_without_improvement += 1
                             Logger.logTagged("TRAINING",f"Nessun miglioramento Accuracy: {epoch_acc:.4f} (best: {best_Accuracy:.4f})")
+                    elif earlyStoppingType == EarlyStoppingType.NONE:
+                        continue
 
                     if epochs_without_improvement >= patience:
                         Logger.logTagged("END TRAINING",f"Early stopping! Nessun miglioramento per {patience} epoche consecutive.")
