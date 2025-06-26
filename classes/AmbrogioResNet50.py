@@ -13,10 +13,11 @@ import torch
 import torch.nn.functional as F
 from torchvision import transforms
 from PIL import Image
-from sklearn.metrics import classification_report, confusion_matrix, f1_score
+from sklearn.metrics import classification_report, f1_score
 import numpy as np
 from utilities.Logger import Logger
 from utilities.plotConfusionMatrix import plotConfusionMatrix
+from classes.EarlyStoppingType import EarlyStoppingType
 
 class Optimazer(Enum):
     """ottimizzatori supportati dal modello"""
@@ -27,7 +28,7 @@ class Optimazer(Enum):
 
 
 class AmbrogioNet50(Model):
-    def __init__(self,lr=0.001, momentum=0.95, optimizer=Optimazer.Adam):
+    def __init__(self,lr=0.001, momentum=0.95, optimizer=Optimazer.Adam,step_size=7, gamma=0.1):
         self.name = 'AmbrogioNet50'
         self.model = models.resnet50(weights=ResNet50_Weights.DEFAULT)
         
@@ -45,7 +46,7 @@ class AmbrogioNet50(Model):
             self.optimizer = self.optimizerResolver(optimizer)(self.model.parameters(), lr=lr, momentum=momentum)
         
         # imposta il learning rate scheduler
-        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=7, gamma=0.1)
+        self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=step_size, gamma=gamma)
         
     def optimizerResolver(self,mode:Optimazer) -> optim:
         if mode == Optimazer.Adam:
@@ -58,7 +59,7 @@ class AmbrogioNet50(Model):
         raise Exception("Optimizer not supported")
 
     
-    def train_model(self, num_epochs=100,patience=5,delta=0.001,mode = TestingMode.TestWithRealImages):
+    def train_model(self, num_epochs=100,patience=5,delta=0.001,mode = TestingMode.TestWithRealImages,earlyStoppingType = EarlyStoppingType.F1_Score):
         '''
         Funzione per addestrare il modello
         :param num_epochs: numero di epoche per l'addestramento
@@ -70,6 +71,7 @@ class AmbrogioNet50(Model):
 
         # Inizializza le variabili per il monitoraggio del miglioramento
         best_F1 = 0.0
+        best_Accuracy = 0.0
         epochs_without_improvement = 0
 
         for epoch in range(num_epochs):
@@ -123,13 +125,22 @@ class AmbrogioNet50(Model):
                 Logger.logTagged("TRAINING",f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f} F1: {epoch_f1:.4f}')
 
                 if phase == 'val':
-                    if epoch_acc > best_F1 + delta:
-                        best_F1 = epoch_f1
-                        epochs_without_improvement = 0
-                        Logger.logTagged("TRAINING",f"Nuovo miglioramento F1 macro: {best_F1:.4f}")
-                    else:
-                        epochs_without_improvement += 1
-                        Logger.logTagged("TRAINING",f"Nessun miglioramento F1 macro: {epoch_f1:.4f} (best: {best_F1:.4f})")
+                    if earlyStoppingType == EarlyStoppingType.F1_Score:
+                        if epoch_f1 > best_F1 + delta:
+                            best_F1 = epoch_f1
+                            epochs_without_improvement = 0
+                            Logger.logTagged("TRAINING",f"Nuovo miglioramento F1 macro: {best_F1:.4f}")
+                        else:
+                            epochs_without_improvement += 1
+                            Logger.logTagged("TRAINING",f"Nessun miglioramento F1 macro: {epoch_f1:.4f} (best: {best_F1:.4f})")
+                    elif earlyStoppingType == EarlyStoppingType.Accuracy:
+                        if epoch_acc > best_Accuracy + delta:
+                            best_Accuracy = epoch_acc
+                            epochs_without_improvement = 0
+                            Logger.logTagged("TRAINING",f"Nuovo miglioramento Accuracy: {best_Accuracy:.4f}")
+                        else:
+                            epochs_without_improvement += 1
+                            Logger.logTagged("TRAINING",f"Nessun miglioramento Accuracy: {epoch_acc:.4f} (best: {best_Accuracy:.4f})")
 
                     if epochs_without_improvement >= patience:
                         Logger.logTagged("END TRAINING",f"Early stopping! Nessun miglioramento per {patience} epoche consecutive.")
@@ -194,5 +205,7 @@ class AmbrogioNet50(Model):
         # Errore medio di classificazione
         accuracy = np.mean(np.array(all_preds) == np.array(all_labels))
         classification_error = 1.0 - accuracy
+        # f1 score 
+        f1 = f1_score(all_labels, all_preds, average='macro')
         Logger.logTagged("TESTING",f"Errore medio di classificazione: {classification_error:.4f}")
-        return accuracy
+        return accuracy,f1

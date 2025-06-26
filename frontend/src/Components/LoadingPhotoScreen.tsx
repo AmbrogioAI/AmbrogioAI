@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import LoadingScreen from "./LoadingScreen";
 import { Backdrop, Button, Paper, Typography } from "@mui/material";
 import { askToPredict } from "../routes/askToPredict";
@@ -24,17 +24,19 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
   const [image, setImage] = useState("");
   const [prediction, setPrediction] = useState([] as number[]);
   const { isDarkMode } = useThemeContext();
-
+  const executedRef = useRef(false);
   // Stato per il conto alla rovescia
   const maxCountdown = 3; // Imposta il tempo del countdown in secondi
   const [countdown, setCountdown] = useState(maxCountdown);
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+    if (executedRef.current) return;
+    executedRef.current = true;
+    
     if (Modes.prediction === mode) {
-      const interval = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-
       setTimeout(() => {
         clearInterval(interval); // Ferma il countdown
         askToPredict()
@@ -47,14 +49,9 @@ function LoadingPhotoScreen({ mode, handleClose }: LoadingPhotoScreenProps) {
             console.error(err);
             setIsLoading(false);
           });
-      }, maxCountdown * 1000);
+      }, maxCountdown * 1000 + 1000);
       return () => clearInterval(interval);
     } else {
-      // Avvia il conto alla rovescia
-      const interval = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-
       // Dopo 3 secondi, scatta la foto
       setTimeout(() => {
         clearInterval(interval); // Ferma il countdown

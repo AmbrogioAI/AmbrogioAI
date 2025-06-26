@@ -34,17 +34,55 @@ if __name__ == '__main__':
         freeze_support()
     Logger.resetFile()
 
-    model = ar50.AmbrogioNet50(optimizer=Optimazer.Adam)
+    model = ar50.AmbrogioNet50()
     if input("Do you want to train the model? (y/n): ").lower() == 'y':
         model.train_model(mode = TestingMode.TestWithRealImages)
         Logger.logTagged("INFO","Training completed, starting the fine tuning phase...")
-        model.train_model(num_epochs=0, patience=4, mode=TestingMode.OnlyRealImages)        
+        model.train_model(num_epochs=20, patience=4, mode=TestingMode.OnlyRealImages)        
         Logger.logTagged("INFO","Fine Tuning with Only Real Images completed, starting the Testing phase...")
     else:
         model.load_model()
-    model.test_model(mode = TestingMode.TestWithRealImages)
+    model.test_model(mode = TestingMode.TestWithRealImages,printConfusionMatrix=False)
     Logger.logTagged("INFO","Testing complete")
     saveModelAnswer()
+    model = ResNet50FromScratch(num_classes=3)
+    model.load_model()
+    
+    import numpy as np
+    import torch
+    
+    dataManager = dsm.DataSetManager()
+    _,_,test = dataManager.partitionDataSetEqualy()
+    model.eval()
+    all_preds = []
+    all_labels = []
+
+    with torch.no_grad():
+        for inputs in test:
+            outputs = model.predict(inputs)  # outputs: list di 3 valori di probabilità
+            predicted_class = np.argmax(outputs)  # oppure torch.tensor(outputs).argmax().item()
+            all_preds.append(predicted_class)
+
+            # Etichetta vera (supponendo che ritorni una sola label per immagine)
+            all_labels.append(np.argmax(dataManager.getCorrentPredictionOfImage(inputs)))
+    from utilities.plotConfusionMatrix import plotConfusionMatrix
+    from sklearn.metrics import classification_report, f1_score
+    from utilities import getClasses as gc
+    # Confusion Matrix
+    plotConfusionMatrix(all_preds, all_labels, title='Confusion Matrix - ResNet50', cmap='Blues')
+
+    # Report con precision, recall, f1-score per classe
+    report = classification_report(all_labels, all_preds, digits=4,target_names=gc.getClasses())
+    Logger.logTagged("TESTING",f"Classification Report:\n {report}")
+
+    # Errore medio di classificazione
+    accuracy = np.mean(np.array(all_preds) == np.array(all_labels))
+    classification_error = 1.0 - accuracy
+    # f1 score 
+    f1 = f1_score(all_labels, all_preds, average='macro')
+    Logger.logTagged("TESTING",f"Errore medio di classificazione: {classification_error:.4f}")
+    
+    Logger.logTagged("INFO","Testing complete for ResNet50FromScratch")
 
     # model.load_model()
     # basePath = r"C:\Users\utente\Desktop\ele.jpg"

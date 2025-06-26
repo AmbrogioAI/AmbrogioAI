@@ -1,42 +1,58 @@
-export default async function capturePhoto() {
+export default async function capturePhoto({
+  width = 1036,
+  height = 1088,
+  mimeType = "image/jpeg",
+  quality = 0.8,
+}: {
+  width?: number;
+  height?: number;
+  mimeType?: "image/jpeg" | "image/png";
+  quality?: number;
+} = {}): Promise<string | null> {
   const video = document.createElement("video");
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
 
   try {
-    // Accendi la fotocamera
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        width: { ideal: 1036.6 },
-        height: { ideal: 1087.8 },
+        width: { ideal: width },
+        height: { ideal: height },
         frameRate: { ideal: 60 },
       },
     });
+
     video.srcObject = stream;
-    await new Promise((resolve) => (video.onloadedmetadata = resolve));
-    video.play();
+    video.muted = true;
+    video.playsInline = true;
+    video.autoplay = true;
 
-    // Imposta le dimensioni della canvas
-    canvas.width = 1036.6;
-    canvas.height = 1087.8;
+    await new Promise((resolve) => {
+      video.onloadedmetadata = () => {
+        video.play();
+        resolve(true);
+      };
+    });
 
-    // Verifica che il context sia stato creato correttamente
+    canvas.width = width;
+    canvas.height = height;
+
     if (!context) {
       throw new Error("Impossibile ottenere il contesto del canvas");
     }
 
-    // Disegna l'immagine sul canvas
+    // Aspetta il prossimo frame per assicurarti che la fotocamera abbia "un'immagine"
+    await new Promise(requestAnimationFrame);
+
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL(mimeType, quality);
 
-    // Converti l'immagine in base64
-    const imageData = canvas.toDataURL("image/png");
-
-    // Interrompi il flusso della fotocamera
+    // Stop della fotocamera
     stream.getTracks().forEach((track) => track.stop());
 
-    return imageData; // Restituisce l'immagine in base64
+    return imageData;
   } catch (error) {
     console.error("Errore nell'acquisizione della foto:", error);
-    return null; // Ritorna null in caso di errore
+    return null;
   }
 }
